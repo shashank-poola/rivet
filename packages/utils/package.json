@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/utils",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "zod": "^3.22.4"
+  }
+}

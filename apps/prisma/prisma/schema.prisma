@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwrod     String 
+  credentials  Credentials[]
+  workflow     Workflow[]
+}
+
+model Credentials {
+  id           String      @id @default(uuid())
+  title        String
+  platform     platform
+  data         Json
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String
+}
+
+model Workflow {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
+  title        String
+  enabled      Boolean     @default(false)
+  nodes        Json
+  connections  Json
+    node        Node[]
+  webhook     Webhook?    @relation(fields: [webhookId], references: [id])
+  webhookId   String?     @unique
+  triggerType TriggerType
+  execution   Execution[]
+}
+
+model Node {
+  id         String   @id @default(uuid())
+  title      String
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  enabled    Boolean  @default(false)
+}
+
+model Webhook {
+  id       String    @id @default(uuid())
+  title    String
+  secret   String?
+  workflow Workflow?
+}
+
+model Execution {
+  id         String   @id @default(uuid())
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflowId String
+  status     Boolean  @default(false)
+  tasksDone  Int      @default(0)
+  totalTasks Int?
+  result     Json?
+}
+
+enum Platform {
+  Telegram
+  ResendEmail
+}
+
+enum TriggerType {
+  Manual
+  Webhook
+}
