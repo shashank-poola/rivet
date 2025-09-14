@@ -14,7 +14,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import TriggerPanel from './TriggerPanel';
+import TriggerPanel from './TriggerPanel.js';
 
 // Define initial nodes
 const initialNodes: Node[] = [];

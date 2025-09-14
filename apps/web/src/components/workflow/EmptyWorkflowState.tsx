@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileText, Bot } from 'lucide-react';
-import WorkflowCard from './WorkflowCard';
+import WorkflowCard from './WorkflowCard.js';
 
 interface EmptyWorkflowStateProps {
   userName?: string;
