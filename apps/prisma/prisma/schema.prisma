@@ -17,7 +17,7 @@ datasource db {
 model User {
   id           String      @id @default(uuid())
   email        String      @unique
-  passwrod     String 
+  password     String 
   credentials  Credentials[]
   workflow     Workflow[]
 }
@@ -25,7 +25,7 @@ model User {
 model Credentials {
   id           String      @id @default(uuid())
   title        String
-  platform     platform
+  platform     Platform
   data         Json
   user         User        @relation(fields: [userId], references: [id])
   userId       String
@@ -74,6 +74,7 @@ model Execution {
 enum Platform {
   Telegram
   ResendEmail
+  WhatsApp
 }
 
 enum TriggerType {
