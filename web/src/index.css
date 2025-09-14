@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* FlowEngine Design System - Light Theme First */
+    --background: 0 0% 98%; /* #F7F8FA */
+    --foreground: 215 20% 22%; /* #1F2937 */
+    
+    /* Surfaces */
+    --surface: 0 0% 100%; /* #FFFFFF */
+    --surface-hover: 210 20% 98%; /* Light gray hover */
+    --surface-active: 210 20% 96%;
+    
+    /* Cards */
+    --card: 0 0% 100%;
+    --card-foreground: 215 20% 22%;
+    --card-hover: 210 20% 98%;
+    
+    /* Popovers & Dialogs */
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 20% 22%;
+    
+    /* Primary - Lindy's Blue */
+    --primary: 222 99% 58%; /* #2B66FE */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 220 99% 52%;
+    --primary-glow: 222 99% 58%;
+    
+    /* Secondary - Teal accent */
+    --secondary: 174 62% 40%; /* #14B8A6 */
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 174 62% 35%;
+    
+    /* Muted elements */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 15% 50%;
+    
+    /* Accent */
+    --accent: 174 62% 40%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Status Colors */
+    --destructive: 0 72% 61%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%;
+    --success: 158 64% 39%; /* #10B981 */
+    --success-foreground: 0 0% 100%;
+    --warning: 35 92% 50%; /* #F59E0B */
+    --warning-foreground: 0 0% 100%;
+    
+    /* Borders */
+    --border: 214 20% 92%;
+    --border-subtle: 214 20% 95%;
+    --input: 214 20% 94%;
+    --ring: 222 99% 58%;
+    
+    /* Sidebar specific */
+    --sidebar-background: 210 20% 98%;
+    --sidebar-foreground: 215 20% 22%;
+    --sidebar-primary: 222 99% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 95%;
+    --sidebar-accent-foreground: 215 20% 22%;
+    --sidebar-border: 214 20% 92%;
+    --sidebar-ring: 222 99% 58%;
+    --sidebar-hover: 210 20% 95%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(222 99% 58%), hsl(217 95% 65%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 98%));
+    --gradient-glow: radial-gradient(circle at center, hsl(222 99% 58% / 0.1), transparent);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.07);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 20px hsl(222 99% 58% / 0.15);
+    
+    /* Animations */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Typography */
+    --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --font-secondary: 'Inter', system-ui, -apple-system, sans-serif;
+    
+    --radius: 0.375rem;
+  }
+  
+  .dark {
+    --background: 220 15% 8%;
+    --foreground: 210 20% 95%;
+    
+    --surface: 220 15% 12%;
+    --surface-hover: 220 15% 14%;
+    --surface-active: 220 15% 16%;
+    
+    --card: 220 15% 13%;
+    --card-foreground: 210 20% 95%;
+    --card-hover: 220 15% 15%;
+    
+    --popover: 220 15% 11%;
+    --popover-foreground: 210 20% 95%;
+    
+    --primary: 222 99% 62%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 220 99% 58%;
+    
+    --secondary: 174 62% 45%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 15% 60%;
+    
+    --accent: 174 62% 45%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 158 64% 42%;
+    --success-foreground: 0 0% 100%;
+    --warning: 35 92% 55%;
+    --warning-foreground: 0 0% 100%;
+    
+    --border: 220 15% 20%;
+    --input: 220 15% 18%;
+    --ring: 222 99% 62%;
+    
+    --sidebar-background: 220 15% 10%;
+    --sidebar-foreground: 220 15% 75%;
+    --sidebar-primary: 222 99% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 15%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 15% 18%;
+    --sidebar-ring: 222 99% 62%;
+    --sidebar-hover: 220 15% 14%;
+    
+    --shadow-sm: 0 1px 2px 0 hsl(220 15% 5% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(220 15% 5% / 0.4);
+    --shadow-lg: 0 10px 15px -3px hsl(220 15% 5% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  
+  /* Custom animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  
+  @keyframes slide-in {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+}

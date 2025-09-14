@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import  { Request, Response } from "express";
 import { PrismaClient } from "../../prisma/generated/prisma";
 import { CredentialsSchema, CredentialsUpdateSchema } from "../../../packages/utils";
 
@@ -79,7 +79,7 @@ export const updateCredentials = async (req: AuthRequest, res: Response) => {
     if (!response.success) {
         return res.status(400).json({ 
             message: "Invalid credentials data", 
-            errors: response.error.errors 
+            errors: response.error.errors
         });
     }
     
