@@ -1,0 +1,32 @@
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import routes from "./routes";
+
+dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env" : ".env.local" });
+
+const app = express();
+
+app.use(cors({
+  origin: ["http://localhost:8080", "http://127.0.0.1:8080"],
+  credentials: true,
+}));
+app.use(express.json());
+app.use(cookieParser());
+app.use(morgan("dev"));
+app.use("/api", routes);
+
+// TODO: replace with proper routers once implemented
+app.get("/health", (_req, res) => {
+  res.json({ ok: true });
+});
+
+const PORT = Number(process.env.PORT) || 3000;
+app.listen(PORT, () => {
+  console.log(`API running on http://localhost:${PORT}`);
+});
+
+export default app;
+

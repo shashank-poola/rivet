@@ -24,7 +24,7 @@ export const postCredentials = async (req: AuthRequest, res: Response) => {
         return res.status(401).json({ message: "User not found"})
     }
     const data = response.data;
-    const newCredentials = await Prisma.credentials.create({
+    const newCredentials = await prisma.credentials.create({
         data: {
             title: data.title,
             platform: data.platform,
@@ -48,7 +48,9 @@ export const getCredentials = async (req: AuthRequest, res: Response) => {
         where: { userId },
     });
     return res.json({ message: "All Credentials fetched successfully", credentials})
-    export const deleteCredentials = async (req: AuthRequest, res: Response) => {
+}
+
+export const deleteCredentials = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
         return res.status(401).json({ message: "User not found" });
