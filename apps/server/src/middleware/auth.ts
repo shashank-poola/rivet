@@ -1,24 +1,34 @@
 import type { Request, Response, NextFunction } from "express";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { PrismaClient } from "../../../prisma/generated/prisma/index.js";
+import { JWT_SECRET } from "../../controller/authcontroller";
 
-const JWT_SECRET = process.env.JWT_SECRET || "123";
+const prisma = new PrismaClient();
 
-export interface JwtUserPayload {
-  id: string;
-  email?: string;
-}
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const authHeader = req.headers.authorization as string | undefined;
+		const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : undefined;
+		const token = bearerToken ?? (req as any).cookies?.access_token;
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  try {
-    const token = req.cookies?.["access_token"] || (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.slice(7) : undefined);
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
-    const payload = jwt.verify(token, JWT_SECRET) as JwtUserPayload;
-    // @ts-expect-error augment
-    req.user = { id: payload.id, email: payload.email ?? "" };
-    next();
-  } catch {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-}
+		if (!token) {
+			return res.status(401).json({ message: "Unauthorized" });
+		}
 
+		const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
 
+		const user = await prisma.user.findUnique({
+			where: { id: decoded.id },
+			select: { id: true, email: true },
+		});
+
+		if (!user) {
+			return res.status(401).json({ message: "User not found" });
+		}
+
+		(req as any).user = user;
+		return next();
+	} catch (error) {
+		return res.status(401).json({ message: "Invalid or expired token" });
+	}
+};
