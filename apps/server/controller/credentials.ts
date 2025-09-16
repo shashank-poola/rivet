@@ -1,6 +1,6 @@
 import  { Request, Response } from "express";
-import { PrismaClient } from "../../prisma/generated/prisma";
-import { CredentialsSchema, CredentialsUpdateSchema } from "../../../packages/utils";
+import { PrismaClient } from "../../prisma/generated/prisma/index.js";
+import { CredentialsSchema, CredentialsUpdateSchema } from "../../../packages/utils/index.js";
 
 const prisma = new PrismaClient();
 

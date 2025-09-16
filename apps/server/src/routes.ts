@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { signin, signup } from "../auth/authcontroller";
-import { deleteCredentials, getCredentials, postCredentials, updateCredentials } from "../auth/credentials";
+import { signin, signup } from "../controller/authcontroller";
+import { deleteCredentials, getCredentials, postCredentials, updateCredentials } from "../controller/credentials";
 import { requireAuth } from "./middleware/auth";
 
 const router = Router();

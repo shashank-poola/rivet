@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { PrismaClient } from "../../prisma/generated/prisma";
-import { SignupSchema, SigninSchema } from "../../../packages/utils";
+import { PrismaClient } from "../../prisma/generated/prisma/index.js";
+import { SignupSchema, SigninSchema } from "../../../packages/utils/index.js";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 

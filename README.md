@@ -13,8 +13,8 @@ It enables developers and teams to **build, automate, and scale workflows** usin
 - 🛠️ **Custom integrations** – extend with your own nodes and APIs.  
 - 📊 **Real-time execution logs** – debug and monitor workflow runs.  
 - 🌐 **REST API support** – manage workflows programmatically.  
-- 💾 **Database support** – persists workflows, executions, and users.  
-- 🧩 **Pluggable architecture** – easy to extend and customize.  
+- 💾 **Database support** – persists workflows, executions, and users. 
+- 🧩 **Pluggable architecture** – easy to extend and customize.
 
 ---
 
