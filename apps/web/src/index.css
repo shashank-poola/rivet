@@ -83,8 +83,9 @@
     --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     
     /* Typography */
-    --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-    --font-secondary: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Helvetica', 'Arial', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Bricolage Grotesque', 'Helvetica', 'Arial', system-ui, -apple-system, sans-serif;
+    --font-secondary: 'Helvetica', 'Arial', system-ui, -apple-system, sans-serif;
     
     --radius: 0.375rem;
   }
@@ -152,6 +153,15 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+  }
+  
+  /* Heading font utility */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+  
+  .font-heading {
+    font-family: var(--font-heading);
   }
   
   /* Custom animations */

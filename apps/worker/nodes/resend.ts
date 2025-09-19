@@ -29,7 +29,7 @@ console.log("Starting email send...");
 sendEmail(
     {
         to: "{{email}}",
-        subject: "Welcome to FlowEngine",
+        subject: "Welcome to rivet",
         body: "Congrats {{name}}, you have successfully sent an email 🎉",
     },
     "re_QwYHoiZr_EBCLJgiAAKDxvDzYRg7C9ooq", // API key

@@ -16,7 +16,6 @@ const WorkflowTabs: React.FC<WorkflowTabsProps> = ({ activeTab, onTabChange }) =
   const tabs: Tab[] = [
     { id: 'workflows', label: 'Workflows', count: 0 },
     { id: 'credentials', label: 'Credentials', count: 0 },
-    { id: 'executions', label: 'Executions', count: 0 },
   ];
 
   return (

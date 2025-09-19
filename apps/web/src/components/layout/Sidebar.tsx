@@ -68,10 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
   const bottomMenuItems = [
     { id: 'admin', label: 'Admin Panel', icon: Shield },
     { id: 'templates', label: 'Templates', icon: Layout },
-    { id: 'variables', label: 'Variables', icon: Zap },
-    { id: 'insights', label: 'Insights', icon: BarChart3 },
     { id: 'help', label: 'Help', icon: HelpCircle, hasDropdown: true },
-    { id: 'whats-new', label: "What's New", icon: Bell, hasDropdown: true, showBadge: true },
   ];
 
   return (
@@ -86,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
             <Zap className="w-4 h-4 text-white" />
           </div>
           {!isCollapsed && (
-            <span className="font-semibold text-sidebar-foreground font-sans">flowengine</span>
+            <span className="font-semibold text-sidebar-foreground font-sans">rivet</span>
           )}
         </div>
         <button
