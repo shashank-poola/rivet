@@ -224,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
           <DialogHeader>
             <DialogTitle>Settings</DialogTitle>
             <DialogDescription>
-              Customize your FlowEngine experience
+              Customize your rivet experience
             </DialogDescription>
           </DialogHeader>
           

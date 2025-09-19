@@ -22,13 +22,12 @@ const EmptyWorkflowState: React.FC<EmptyWorkflowStateProps> = ({ userName = 'the
         <WorkflowCard
           icon={FileText}
           title="Start from scratch"
-          description="Build a custom workflow tailored to your needs"
           onClick={onStartFromScratch}
         />
         <WorkflowCard
           icon={Bot}
           title="Test a simple AI Agent example"
-          description="Explore AI-powered automation capabilities"
+          onClick={onStartFromScratch}
         />
       </div>
     </div>

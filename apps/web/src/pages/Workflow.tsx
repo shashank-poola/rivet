@@ -35,7 +35,7 @@ const Workflow: React.FC = () => {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-muted">
             <div className="w-2 h-2 rounded-full bg-muted-foreground"></div>
-            <span className="text-sm text-muted-foreground">Inactive</span>
+            <span className="text-sm text-muted-foreground">Active</span>
           </div>
           
           <Button variant="outline" size="sm">
@@ -65,9 +65,6 @@ const Workflow: React.FC = () => {
           </button>
           <button className="text-sm text-muted-foreground pb-3 hover:text-foreground transition-colors">
             Executions
-          </button>
-          <button className="text-sm text-muted-foreground pb-3 hover:text-foreground transition-colors">
-            Evaluations
           </button>
         </div>
       </div>

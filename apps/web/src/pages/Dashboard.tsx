@@ -25,7 +25,6 @@ const Dashboard: React.FC = () => {
         <header className="flex items-center justify-between h-14 px-6 border-b border-border bg-surface">
           <div>
             <h1 className="text-lg font-semibold text-foreground">Personal</h1>
-            <p className="text-sm text-muted-foreground">Workflows and credentials owned by you</p>
           </div>
           <Button 
             onClick={() => {

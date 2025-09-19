@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, Play, Webhook, Clock, FileText, GitBranch, MessageSquare } from 'lucide-react';
+import { Search, Play, Webhook, Clock, FileText, GitBranch, MessageSquare, Mail } from 'lucide-react';
 
 interface TriggerOption {
   id: string;
@@ -48,10 +48,10 @@ const triggers: TriggerOption[] = [
     icon: <GitBranch className="h-5 w-5" />
   },
   {
-    id: 'chat',
-    title: 'On chat message',
-    description: 'Runs the flow when a chat message is received',
-    icon: <MessageSquare className="h-5 w-5" />
+    id: 'email',
+    title: 'On email',
+    description: 'Runs the flow when an email is received',
+    icon: <Mail className="h-5 w-5" />
   }
 ];
 
