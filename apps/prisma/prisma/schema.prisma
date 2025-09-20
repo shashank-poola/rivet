@@ -73,9 +73,9 @@ model Execution {
 }
 
 enum Platform {
-  Telegram
-  ResendEmail
-  WhatsApp
+  email
+  telegram
+  whatsapp
 }
 
 enum TriggerType {

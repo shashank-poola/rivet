@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import { Button } from '@/components/ui/button';
@@ -8,13 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Github, MessageCircle, Mail, Key } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { credentialsApi, type CredentialDto, type Platform } from '@/lib/api';
 
-interface Credential {
-  id: string;
-  name: string;
-  type: 'github' | 'telegram' | 'whatsapp' | 'gmail';
-  apiKey: string;
-  createdAt: Date;
+interface Credential extends CredentialDto {
+  createdAt?: Date;
 }
 
 const Credentials: React.FC = () => {
@@ -23,46 +20,51 @@ const Credentials: React.FC = () => {
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newCredential, setNewCredential] = useState({
-    name: '',
-    type: 'github' as Credential['type'],
-    apiKey: ''
+    title: '',
+    platform: 'email' as Platform,
+    data: {} as Record<string, string>,
   });
 
-  const handleAddCredential = () => {
-    if (!newCredential.name || !newCredential.apiKey) {
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await credentialsApi.list();
+        setCredentials(res.credentials as Credential[]);
+      } catch (e) {
+        // ignore for now
+      }
+    })();
+  }, []);
+
+  const handleAddCredential = async () => {
+    if (!newCredential.title || !newCredential.platform) {
       toast({
         title: "Error",
-        description: "Please fill in all fields",
+        description: "Please fill in all required fields",
         variant: "destructive"
       });
       return;
     }
 
-    const credential: Credential = {
-      id: Math.random().toString(36).substr(2, 9),
-      ...newCredential,
-      createdAt: new Date()
-    };
-
-    setCredentials([...credentials, credential]);
-    setNewCredential({ name: '', type: 'github', apiKey: '' });
-    setIsDialogOpen(false);
-    
-    toast({
-      title: "Success",
-      description: "Credential added successfully"
-    });
+    try {
+      await credentialsApi.create(newCredential);
+      const res = await credentialsApi.list();
+      setCredentials(res.credentials as Credential[]);
+      setNewCredential({ title: '', platform: 'email', data: {} });
+      setIsDialogOpen(false);
+      toast({ title: "Success", description: "Credential added successfully" });
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to add credential", variant: 'destructive' });
+    }
   };
 
-  const getIcon = (type: Credential['type']) => {
-    switch (type) {
-      case 'github':
-        return <Github className="h-5 w-5" />;
+  const getIcon = (platform: Platform) => {
+    switch (platform) {
       case 'telegram':
         return <MessageCircle className="h-5 w-5" />;
       case 'whatsapp':
         return <MessageCircle className="h-5 w-5 text-green-600" />;
-      case 'gmail':
+      case 'email':
         return <Mail className="h-5 w-5 text-red-600" />;
     }
   };
@@ -99,12 +101,12 @@ const Credentials: React.FC = () => {
               
               <div className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name">Title</Label>
                   <Input
                     id="name"
-                    value={newCredential.name}
-                    onChange={(e) => setNewCredential({...newCredential, name: e.target.value})}
-                    placeholder="My GitHub API"
+                    value={newCredential.title}
+                    onChange={(e) => setNewCredential({...newCredential, title: e.target.value})}
+                    placeholder="My Email API"
                   />
                 </div>
                 
@@ -113,25 +115,23 @@ const Credentials: React.FC = () => {
                   <select
                     id="type"
                     className="w-full px-3 py-2 border border-input rounded-md bg-background"
-                    value={newCredential.type}
-                    onChange={(e) => setNewCredential({...newCredential, type: e.target.value as Credential['type']})}
+                    value={newCredential.platform}
+                    onChange={(e) => setNewCredential({...newCredential, platform: e.target.value as Platform})}
                   >
-                    <option value="github">GitHub</option>
+                    <option value="email">Email</option>
                     <option value="telegram">Telegram</option>
                     <option value="whatsapp">WhatsApp</option>
-                    <option value="gmail">Gmail</option>
                   </select>
                 </div>
                 
+                {/* Simple key/value for demo */}
                 <div>
-                  <Label htmlFor="apiKey">API Key</Label>
-                  <Input
-                    id="apiKey"
-                    type="password"
-                    value={newCredential.apiKey}
-                    onChange={(e) => setNewCredential({...newCredential, apiKey: e.target.value})}
-                    placeholder="Enter your API key"
-                  />
+                  <Label htmlFor="k">Config Key</Label>
+                  <Input id="k" placeholder="e.g. apiKey or token" onChange={(e) => setNewCredential({ ...newCredential, data: { ...newCredential.data, key: e.target.value } })} />
+                </div>
+                <div>
+                  <Label htmlFor="v">Config Value</Label>
+                  <Input id="v" type="password" placeholder="secret value" onChange={(e) => setNewCredential({ ...newCredential, data: { ...newCredential.data, value: e.target.value } })} />
                 </div>
                 
                 <Button onClick={handleAddCredential} className="w-full">
@@ -158,20 +158,31 @@ const Credentials: React.FC = () => {
                 <Card key={credential.id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      {getIcon(credential.type)}
-                      {credential.name}
+                      {getIcon(credential.platform)}
+                      {credential.title}
                     </CardTitle>
                     <CardDescription>
-                      Type: {credential.type}
+                      Type: {credential.platform}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Added: {credential.createdAt.toLocaleDateString()}
+                      {credential.createdAt ? `Added: ${credential.createdAt.toLocaleDateString()}` : null}
                     </p>
                     <div className="mt-4 flex gap-2">
                       <Button variant="outline" size="sm">Edit</Button>
-                      <Button variant="outline" size="sm" className="text-destructive">Delete</Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-destructive"
+                        onClick={async () => {
+                          await credentialsApi.remove(credential.id);
+                          const res = await credentialsApi.list();
+                          setCredentials(res.credentials as Credential[]);
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

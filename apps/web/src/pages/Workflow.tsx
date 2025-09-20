@@ -16,7 +16,7 @@ const Workflow: React.FC = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="hover:bg-surface-hover"
           >
             <ArrowLeft className="h-4 w-4" />

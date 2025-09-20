@@ -12,9 +12,13 @@ import ReactFlow, {
   BackgroundVariant,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus } from 'lucide-react';
+import { Play, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TriggerPanel from './TriggerPanel.js';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 // Define initial nodes
 const initialNodes: Node[] = [];
@@ -30,6 +34,7 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [showTriggerPanel, setShowTriggerPanel] = useState(true);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -41,26 +46,32 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
       id: `trigger-${triggerId}`,
       type: 'input',
       position: { x: 250, y: 100 },
-      data: { label: triggerId.charAt(0).toUpperCase() + triggerId.slice(1) + ' Trigger' },
+      data: { label: triggerId.charAt(0).toUpperCase() + triggerId.slice(1) + ' Trigger', kind: 'trigger', trigger: triggerId },
     };
     setNodes([newNode]);
     setShowTriggerPanel(false);
   }, [setNodes]);
 
   const addNode = useCallback(() => {
+    const kinds = [
+      { kind: 'email', label: 'Email' },
+      { kind: 'telegram', label: 'Telegram' },
+      { kind: 'whatsapp', label: 'WhatsApp' },
+    ] as const;
+    const next = kinds[(nodes.length - 0) % kinds.length];
     const newNode: Node = {
       id: `node-${nodes.length + 1}`,
       type: 'default',
-      position: { 
-        x: 100 + nodes.length * 150, 
-        y: 100 
-      },
-      data: { 
-        label: `Node ${nodes.length + 1}` 
-      },
+      position: { x: 100 + nodes.length * 150, y: 100 },
+      data: { label: `${next.label} Node`, kind: next.kind, config: {} },
     };
     setNodes((nds) => [...nds, newNode]);
   }, [nodes, setNodes]);
+
+  const updateSelectedNodeData = (patch: Record<string, unknown>) => {
+    if (!selectedNode) return;
+    setNodes((nds) => nds.map(n => n.id === selectedNode.id ? { ...n, data: { ...n.data, config: { ...(n.data as any).config, ...patch } } } : n));
+  };
 
   return (
     <div className="w-full h-full relative flex">
@@ -71,6 +82,7 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeClick={(_, node) => setSelectedNode(node)}
           fitView
           className="bg-background"
         >
@@ -105,10 +117,24 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
         )}
 
         {nodes.length > 0 && (
-          <div className="absolute bottom-4 right-4">
+          <div className="absolute bottom-4 right-4 flex gap-2">
             <Button onClick={addNode} size="lg" className="shadow-lg">
               <Plus className="w-5 h-5 mr-2" />
               Add Node
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="shadow-lg"
+              onClick={() => {
+                // Simple run simulation: log node configs
+                // eslint-disable-next-line no-console
+                console.log('Simulate run with nodes:', nodes.map(n => ({ id: n.id, kind: (n.data as any)?.kind, config: (n.data as any)?.config })));
+                alert('Test run simulated. Check console for payload.');
+              }}
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Test Run
             </Button>
           </div>
         )}
@@ -116,6 +142,63 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
       
       {showTriggerPanel && (
         <TriggerPanel onSelectTrigger={handleSelectTrigger} />
+      )}
+
+      {/* Inspector */}
+      {selectedNode && (
+        <div className="w-96 h-full bg-surface border-l border-border p-4 space-y-4 overflow-auto">
+          <h3 className="text-lg font-semibold">Edit Node</h3>
+          <Card className="p-4 space-y-3">
+            <div>
+              <Label>Type</Label>
+              <div className="text-sm text-muted-foreground mt-1">{(selectedNode.data as any)?.kind ?? 'node'}</div>
+            </div>
+            {((selectedNode.data as any)?.kind === 'email') && (
+              <>
+                <div>
+                  <Label>From</Label>
+                  <Input onChange={(e) => updateSelectedNodeData({ from: e.target.value })} />
+                </div>
+                <div>
+                  <Label>To</Label>
+                  <Input onChange={(e) => updateSelectedNodeData({ to: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Subject</Label>
+                  <Input onChange={(e) => updateSelectedNodeData({ subject: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Body</Label>
+                  <Textarea rows={4} onChange={(e) => updateSelectedNodeData({ body: e.target.value })} />
+                </div>
+              </>
+            )}
+            {((selectedNode.data as any)?.kind === 'telegram') && (
+              <>
+                <div>
+                  <Label>Chat ID</Label>
+                  <Input onChange={(e) => updateSelectedNodeData({ chatId: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Message</Label>
+                  <Textarea rows={3} onChange={(e) => updateSelectedNodeData({ message: e.target.value })} />
+                </div>
+              </>
+            )}
+            {((selectedNode.data as any)?.kind === 'whatsapp') && (
+              <>
+                <div>
+                  <Label>Phone Number</Label>
+                  <Input onChange={(e) => updateSelectedNodeData({ phone: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Message</Label>
+                  <Textarea rows={3} onChange={(e) => updateSelectedNodeData({ message: e.target.value })} />
+                </div>
+              </>
+            )}
+          </Card>
+        </div>
       )}
     </div>
   );
