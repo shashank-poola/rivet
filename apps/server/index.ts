@@ -3,7 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import routes from "./routes";
+import routes from "./routes/routes.js";
 
 dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env" : ".env.local" });
 
@@ -25,10 +25,6 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use("/api", routes);
 
-// TODO: replace with proper routers once implemented
-app.get("/health", (_req, res) => {
-  res.json({ ok: true });
-});
 
 const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => {
@@ -36,4 +32,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-

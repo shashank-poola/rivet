@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import { SignupSchema, SigninSchema } from "@workspace/utils";
-import * as bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
+import { SignupSchema, SigninSchema } from "../types/schema.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { PrismaClient } from "../../prisma/generated/prisma/index.js";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "123";

@@ -1,6 +1,7 @@
 import  { Request, Response } from "express";
 import { PrismaClient } from "../../prisma/generated/prisma/index.js";
-import { CredentialsSchema, CredentialsUpdateSchema } from "../../../packages/utils/index.js";
+import type { Prisma } from "../../prisma/generated/prisma/index.js";
+import { CredentialsSchema, CredentialsUpdateSchema } from "../types/schema.js";
 
 const prisma = new PrismaClient();
 
@@ -28,7 +29,7 @@ export const postCredentials = async (req: AuthRequest, res: Response) => {
         data: {
             title: data.title,
             platform: data.platform,
-            data: data.data,
+                data: data.data as Prisma.InputJsonValue,
             userId: req.user.id,
         }
     });
@@ -81,7 +82,7 @@ export const updateCredentials = async (req: AuthRequest, res: Response) => {
     if (!response.success) {
         return res.status(400).json({ 
             message: "Invalid credentials data", 
-            errors: response.error.errors
+            errors: response.error.issues
         });
     }
     
@@ -94,7 +95,7 @@ export const updateCredentials = async (req: AuthRequest, res: Response) => {
         data: {
             ...(updatedCreds.title && { title: updatedCreds.title }),
             ...(updatedCreds.platform && { platform: updatedCreds.platform }),
-            ...(updatedCreds.data && { data: updatedCreds.data }),
+            ...(updatedCreds.data && { data: updatedCreds.data as Prisma.InputJsonValue }),
         }
     });
     
