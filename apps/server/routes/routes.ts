@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { signin, signup } from "../controller/authcontroller";
-import { deleteCredentials, getCredentials, postCredentials, updateCredentials } from "../controller/credentials";
-import { requireAuth } from "./middleware/auth";
+import { signin, signup } from "../controller/user.js";
+import { deleteCredentials, getCredentials, postCredentials, updateCredentials } from "../controller/credentials.js";
+import { requireAuth } from "../middleware/auth.js";
 
-const router = Router();
+const {router: Router} = Router();
 
 router.post("/auth/signup", signup);
 router.post("/auth/signin", signin);

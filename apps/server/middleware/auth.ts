@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "../../../prisma/generated/prisma/index.js";
-import { JWT_SECRET } from "../../controller/authcontroller";
+import { PrismaClient } from "../../prisma/generated/prisma/index.js";
+import { JWT_SECRET } from "../controller/user.js";
 
 const prisma = new PrismaClient();
 
