@@ -51,7 +51,6 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <img src="/rivet.png" alt="Rivet" className="h-8 w-auto" />
-            <span className="text-xl font-bold text-slate-900 dark:text-white">Rivet</span>
           </div>
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
@@ -181,10 +180,9 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <img src="/rivet.png" alt="Rivet" className="h-6 w-auto" />
-              <span className="text-lg font-bold text-slate-900 dark:text-white">Rivet</span>
             </div>
             <div className="text-slate-600 dark:text-slate-300">
-              © 2024 Rivet. All rights reserved.
+              © 2025 Rivet. All rights reserved.
             </div>
           </div>
         </div>
