@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
   const bottomMenuItems = [
     { id: 'admin', label: 'Admin Panel', icon: Shield },
     { id: 'templates', label: 'Templates', icon: Layout },
-    { id: 'help', label: 'Help', icon: HelpCircle, hasDropdown: true },
+    { id: 'help', label: 'Help', icon: HelpCircle, hasDropdown: true, showBadge: true },
   ];
 
   return (
@@ -77,26 +77,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
       isCollapsed ? "w-16" : "w-64"
     )}>
       {/* Logo Section */}
-      <div className="flex items-center h-14 px-4 border-b border-sidebar-border bg-surface">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-7 h-7 rounded bg-gradient-primary">
-            <Zap className="w-4 h-4 text-white" />
-          </div>
-          {!isCollapsed && (
-            <span className="font-semibold text-sidebar-foreground font-sans">rivet</span>
-          )}
-        </div>
-        <button
-          onClick={onToggleCollapse}
-          className="ml-auto p-1.5 rounded hover:bg-sidebar-hover transition-colors"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-sidebar-foreground" />
-          ) : (
-            <ChevronLeft className="w-4 h-4 text-sidebar-foreground" />
-          )}
-        </button>
-      </div>
+<div className="flex items-center h-14 px-4 border-b border-sidebar-border bg-surface">
+  <div className="flex items-center gap-2">
+    <div className="flex items-center justify-center w-7 h-7 rounded bg-gradient-primary">
+      <Zap className="w-4 h-4 text-white" />
+    </div>
+    {!isCollapsed && (
+      <img src="/rivet.png" alt="Rivet" className="h-8 w-auto" />
+    )}
+  </div>
+  <button
+    onClick={onToggleCollapse}
+    className="ml-auto p-1.5 rounded hover:bg-sidebar-hover transition-colors"
+  >
+    {isCollapsed ? (
+      <ChevronRight className="w-4 h-4 text-sidebar-foreground" />
+    ) : (
+      <ChevronLeft className="w-4 h-4 text-sidebar-foreground" />
+    )}
+  </button>
+</div>
 
       {/* Main Navigation */}
       <nav className="flex-1 px-2 py-4 overflow-y-auto">
