@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from '@/hooks/use-theme';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -38,6 +39,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
+
+  const { logout } = useAuth();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['projects']));
   const [showSettings, setShowSettings] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -165,9 +168,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem>Documentation</DropdownMenuItem>
+                    <DropdownMenuItem>Documentation
+
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Community</DropdownMenuItem>
                     <DropdownMenuItem>Support</DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive" onClick={logout}>
+                      <LogOut className= "w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
@@ -191,7 +200,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
               </div>
               {!isCollapsed && (
                 <>
-                  <span className="ml-3 text-sm text-sidebar-foreground truncate">shashank poola</span>
+                  <span className="ml-3 text-sm text-sidebar-foreground truncate">
+                    {User?.name || 'user'}
+                  </span>
                   <ChevronDown className="w-3 h-3 ml-auto text-sidebar-foreground" />
                 </>
               )}
@@ -209,7 +220,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive">
               <LogOut className="w-4 h-4 mr-2" />
-              Sign out
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -3,6 +3,7 @@ import { SignupSchema, SigninSchema } from "../types/schema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "../../prisma/generated/prisma/index.js";
+import { RSCPathnameNormalizer } from "next/dist/server/normalizers/request/rsc.js";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "123";
 
@@ -89,3 +90,13 @@ export const signin = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+    export const logout = async (req: Request, res: Response) => {
+        try {
+            res.clearCookie("access_token");
+            return res.json({ message: "Logged out successfully"});
+        } catch (error) {
+            console.error("Logout error:", error);
+            return res.status(500).json({ message: "Internal server error"});
+        }
+    }
+

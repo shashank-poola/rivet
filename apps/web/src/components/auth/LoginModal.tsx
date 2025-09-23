@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext.js";
 import { authApi } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 
@@ -37,22 +37,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password || !name) return;
-    try {
-      await authApi.signup({ email, password });
+    if (!name || !email || !password) return;
+    try  {
+      const userData = await authApi.signup({ email, password });
       login();
       onClose();
-      navigate('/dashboard');
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      alert('Signup failed');
-    }
-  };
+      navigate("/dashboard");
+     } catch (err) {
+          console.error(err);
+          alert("signup failed")
+        }
+    };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md center-content">
         <DialogHeader>
           <DialogTitle>Welcome to Rivet</DialogTitle>
           <DialogDescription>

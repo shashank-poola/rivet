@@ -24,11 +24,6 @@ const EmptyWorkflowState: React.FC<EmptyWorkflowStateProps> = ({ userName = 'the
           title="Start from scratch"
           onClick={onStartFromScratch}
         />
-        <WorkflowCard
-          icon={Bot}
-          title="Test a simple AI Agent example"
-          onClick={onStartFromScratch}
-        />
       </div>
     </div>
   );
