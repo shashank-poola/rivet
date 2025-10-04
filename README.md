@@ -2,7 +2,7 @@
 *A modern workflow automation tool – inspired by [n8n](https://n8n.io/)*
 
 rivet is an open-source workflow automation platform that lets your connect APIs, services, and applications together with ease.  
-It enables developers and teams to **build, automate, and scale workflows** using a simple visual interface and powerful backend engine.
+It enables developers and teams to **build, automate, and scale workflows** using a simple visual interface and powerful backend engine..
 
 ---
 
