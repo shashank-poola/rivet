@@ -2,146 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
 @layer base {
   :root {
-    /* Rivet Design System - Light Theme */
-    --background: 206 33% 96%; /* Catskill White (#F1F5F8) */
-    --foreground: 240 24% 16%; /* Steel Gray (#1F1F33) */
-    
-    /* Surfaces */
-    --surface: 0 0% 100%; /* White */
-    --surface-hover: 206 33% 94%;
-    --surface-active: 206 33% 92%;
-    
-    /* Cards */
-    --card: 0 0% 100%; 
-    --card-foreground: 240 24% 16%;
-    --card-hover: 206 33% 94%;
-    
-    /* Popovers & Dialogs */
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 24% 16%;
-    
-    /* Primary - Brand Blue */
-    --primary: 241 100% 55%; /* #1C17FF */
+    /* Electric Violet Primary */
+    --primary: 277 99% 48%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 241 100% 50%;
-    --primary-glow: 241 100% 55%;
+    --primary-glow: 277 99% 68%;
     
-    /* Secondary - subtle accent (Steel Gray tone) */
-    --secondary: 240 24% 16%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 240 24% 20%;
+    /* Feta green accent color */
+    --feta: 108 67% 95%;
     
-    /* Muted elements */
-    --muted: 206 33% 94%;
-    --muted-foreground: 240 10% 40%;
+    /* Port Gore - Dark text */
+    --foreground: 232 34% 20%;
+    --background: 0 0% 100%;
     
-    /* Accent (reuse primary) */
-    --accent: 241 100% 55%;
-    --accent-foreground: 0 0% 100%;
+    /* Feta - Light accent */
+    --accent: 96 84% 95%;
+    --accent-foreground: 232 34% 20%;
     
-    /* Status Colors */
-    --destructive: 0 72% 61%; /* Red */
+    --card: 0 0% 100%;
+    --card-foreground: 232 34% 20%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 232 34% 20%;
+    
+    --secondary: 232 34% 98%;
+    --secondary-foreground: 232 34% 20%;
+    
+    --muted: 232 10% 96%;
+    --muted-foreground: 232 10% 45%;
+    
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --success: 158 64% 39%; /* Green */
-    --success-foreground: 0 0% 100%;
-    --warning: 35 92% 50%; /* Amber */
-    --warning-foreground: 0 0% 100%;
     
-    /* Borders */
-    --border: 206 33% 90%;
-    --border-subtle: 206 33% 95%;
-    --input: 206 33% 92%;
-    --ring: 241 100% 55%;
+    --border: 232 20% 90%;
+    --input: 232 20% 90%;
+    --ring: 277 99% 48%;
     
-    /* Sidebar */
-    --sidebar-background: 206 33% 96%;
-    --sidebar-foreground: 240 24% 16%;
-    --sidebar-primary: 241 100% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 206 33% 94%;
-    --sidebar-accent-foreground: 240 24% 16%;
-    --sidebar-border: 206 33% 90%;
-    --sidebar-ring: 241 100% 55%;
-    --sidebar-hover: 206 33% 94%;
+    --radius: 0.75rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(241 100% 55%), hsl(241 100% 65%));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(206 33% 96%));
-    --gradient-glow: radial-gradient(circle at center, hsl(241 100% 55% / 0.15), transparent);
+    --gradient-hero: linear-gradient(135deg, hsl(277 99% 48%), hsl(277 99% 68%));
+    --gradient-glow: radial-gradient(circle at center, hsl(277 99% 48% / 0.15), transparent 70%);
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.07);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
-    --shadow-glow: 0 0 20px hsl(241 100% 55% / 0.2);
-    
-    /* Animations */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    
-    /* Typography */
-    --font-sans: 'Helvetica', 'Arial', system-ui, -apple-system, sans-serif;
-    --font-heading: 'Bricolage Grotesque', 'Helvetica', 'Arial', system-ui, -apple-system, sans-serif;
-    --font-secondary: 'Helvetica', 'Arial', system-ui, -apple-system, sans-serif;
-    
-    --radius: 0.375rem;
+    --shadow-primary: 0 10px 40px -15px hsl(277 99% 48% / 0.3);
+    --shadow-card: 0 4px 20px hsl(232 34% 20% / 0.08);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 240 24% 8%;
-    --foreground: 206 33% 96%;
+    --background: 232 34% 12%;
+    --foreground: 0 0% 98%;
     
-    --surface: 240 24% 12%;
-    --surface-hover: 240 24% 14%;
-    --surface-active: 240 24% 16%;
-    
-    --card: 240 24% 13%;
-    --card-foreground: 206 33% 96%;
-    --card-hover: 240 24% 15%;
-    
-    --popover: 240 24% 11%;
-    --popover-foreground: 206 33% 96%;
-    
-    --primary: 241 100% 60%;
+    --primary: 277 99% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 241 100% 55%;
+    --primary-glow: 277 99% 78%;
     
-    --secondary: 240 24% 20%;
-    --secondary-foreground: 0 0% 100%;
+    --accent: 96 50% 20%;
+    --accent-foreground: 0 0% 98%;
     
-    --muted: 240 24% 20%;
-    --muted-foreground: 206 20% 70%;
+    --card: 232 34% 16%;
+    --card-foreground: 0 0% 98%;
     
-    --accent: 241 100% 60%;
-    --accent-foreground: 0 0% 100%;
+    --popover: 232 34% 16%;
+    --popover-foreground: 0 0% 98%;
     
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --success: 158 64% 42%;
-    --success-foreground: 0 0% 100%;
-    --warning: 35 92% 55%;
-    --warning-foreground: 0 0% 100%;
+    --secondary: 232 34% 18%;
+    --secondary-foreground: 0 0% 98%;
     
-    --border: 240 24% 20%;
-    --input: 240 24% 18%;
-    --ring: 241 100% 60%;
+    --muted: 232 20% 25%;
+    --muted-foreground: 232 10% 65%;
     
-    --sidebar-background: 240 24% 10%;
-    --sidebar-foreground: 206 33% 85%;
-    --sidebar-primary: 241 100% 60%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 232 20% 25%;
+    --input: 232 20% 25%;
+    --ring: 277 99% 58%;
+    
+    --sidebar-background: 232 34% 10%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-primary: 277 99% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 24% 15%;
-    --sidebar-accent-foreground: 206 33% 96%;
-    --sidebar-border: 240 24% 18%;
-    --sidebar-ring: 241 100% 60%;
-    --sidebar-hover: 240 24% 14%;
-    
-    --shadow-sm: 0 1px 2px 0 hsl(240 24% 5% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(240 24% 5% / 0.4);
-    --shadow-lg: 0 10px 15px -3px hsl(240 24% 5% / 0.5);
+    --sidebar-accent: 232 34% 16%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 232 20% 20%;
+    --sidebar-ring: 277 99% 58%;
   }
 }
 
@@ -152,43 +118,5 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-  }
-  
-  /* Heading font utility */
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
-  }
-  
-  .font-heading {
-    font-family: var(--font-heading);
-  }
-  
-  /* Custom animations */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
-  
-  @keyframes slide-in {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
-  }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  
-  .animate-slide-in {
-    animation: slide-in 0.3s ease-out;
   }
 }

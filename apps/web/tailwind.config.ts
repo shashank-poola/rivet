@@ -14,8 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Helvetica', 'Arial', 'sans-serif'],
-        heading: ['Bricolage Grotesque', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['DM Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -23,21 +22,14 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        surface: {
-          DEFAULT: "hsl(var(--surface))",
-          hover: "hsl(var(--surface-hover))",
-          active: "hsl(var(--surface-active))",
-        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          hover: "hsl(var(--primary-hover))",
-          glow: "hsl(var(--primary-glow))",
         },
+        feta: "hsl(var(--feta))",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          hover: "hsl(var(--secondary-hover))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -58,7 +50,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-          hover: "hsl(var(--card-hover))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -69,19 +60,7 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
-          hover: "hsl(var(--sidebar-hover))",
         },
-      },
-      backgroundImage: {
-        'gradient-primary': 'var(--gradient-primary)',
-        'gradient-surface': 'var(--gradient-surface)',
-        'gradient-glow': 'var(--gradient-glow)',
-      },
-      boxShadow: {
-        'sm': 'var(--shadow-sm)',
-        'md': 'var(--shadow-md)',
-        'lg': 'var(--shadow-lg)',
-        'glow': 'var(--shadow-glow)',
       },
       borderRadius: {
         lg: "var(--radius)",
