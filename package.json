@@ -16,18 +16,31 @@
     "turbo": "^2.5.5",
     "typescript": "5.7.3"
   },
+  "packageManager": "bun@1.2.21",
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "@prisma/client": "^6.16.1",
     "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "bcryptjs": "^2.4.3",
+    "@types/mustache": "^4.2.6",
+    "@types/node-fetch": "^2.6.13",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "init": "^0.1.2",
     "jsonwebtoken": "^9.0.2",
+    "mustache": "^4.2.0",
+    "node-fetch": "^3.3.2",
     "prisma": "^6.16.1",
     "redis": "^5.8.2",
-    "zod": "^4.1.8"
+    "resend": "^6.0.3",
+    "zod": "^3.23.8"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
