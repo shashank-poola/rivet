@@ -10,7 +10,7 @@ router.post("/auth/signup", signup);
 router.post("/auth/signin", signin);
 router.post("/auth/logout", logout);
 
-
+app.use("/workflows", workflows)
 router.post("/credentials", requireAuth, postCredentials);
 router.get("/credentials", requireAuth, getCredentials);
 router.delete("/credentials/:credentialsId", requireAuth, deleteCredentials);

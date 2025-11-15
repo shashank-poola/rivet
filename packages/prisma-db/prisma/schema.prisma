@@ -40,11 +40,11 @@ model Workflow {
   enabled      Boolean     @default(false)
   nodes        Json
   connections  Json
-    node        Node[]
-  webhook     Webhook?    @relation(fields: [webhookId], references: [id])
-  webhookId   String?     @unique
-  triggerType TriggerType
-  execution   Execution[]
+  node         Node[]
+  webhook      Webhook?    @relation(fields: [webhookId], references: [id])
+  webhookId    String?     @unique
+  triggerType  TriggerType
+  execution    Execution[]
 }
 
 model Node {
