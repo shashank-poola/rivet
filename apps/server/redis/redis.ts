@@ -1,10 +1,9 @@
 import { redis } from "../../../packages/exports/redis/index.js";
 
-await redis.connect();
 
 interface Queue {
   id: string;
-  type: "telegram" | "email";
+  type: "telegram" | "email" | "ai-agent" | "form";
   data: {
     executionId: string;
     credentialId: string;
@@ -46,4 +45,9 @@ export const clearQueue = async () => {
   } catch (error) {
     console.log(`Erorr while clearing queue: ${error}`);
   }
+}
+async function run() {
+  await redis.connect();
 };
+
+run();
