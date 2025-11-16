@@ -10,41 +10,59 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Platform {
+  TELEGRAM
+  RESEND_EMAIL
+  GEMINI
+}
+
+enum TriggerType {
+  MANUAL
+  WEBHOOK
+}
+
+enum ExecutionStatus {
+  RUNNING
+  PAUSED
+  COMPLETED
+  FAILED
 }
 
 model User {
-  id           String      @id @default(uuid())
-  email        String      @unique
-  password     String 
-  credentials  Credentials[]
-  workflow     Workflow[]
+  id          String        @id @default(uuid())
+  email       String        @unique
+  password    String
+  credentials Credentials[]
+  workflows   Workflow[]
 }
 
 model Credentials {
-  id           String      @id @default(uuid())
-  title        String
-  platform     Platform
-  data         Json
-  user         User        @relation(fields: [userId], references: [id])
-  userId       String
+  id       String   @id @default(uuid())
+  title    String
+  platform Platform
+  data     Json
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
 }
 
 model Workflow {
-  id           String      @id @default(uuid())
-  userId       String
-  user         User        @relation(fields: [userId], references: [id])
-  title        String
-  enabled      Boolean     @default(false)
-  nodes        Json
-  connections  Json
-  node         Node[]
-  webhook      Webhook?    @relation(fields: [webhookId], references: [id])
-  webhookId    String?     @unique
-  triggerType  TriggerType
-  execution    Execution[]
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  title       String
+  enabled     Boolean     @default(false)
+  nodesJson   Json? // rename to avoid conflict with relation
+  connections Json?
+  nodes       Node[] // FIXED relation for Node[]
+  webhookId   String?     @unique
+  webhook     Webhook?    @relation(fields: [webhookId], references: [id])
+  triggerType TriggerType
+  executions  Execution[]
+  forms       Form[]
 }
 
 model Node {
@@ -63,22 +81,32 @@ model Webhook {
 }
 
 model Execution {
-  id         String   @id @default(uuid())
-  workflow   Workflow @relation(fields: [workflowId], references: [id])
-  workflowId String
-  status     Boolean  @default(false)
-  tasksDone  Int      @default(0)
-  totalTasks Int?
-  result     Json?
+  id           String          @id @default(uuid())
+  workflowId   String
+  workflow     Workflow        @relation(fields: [workflowId], references: [id])
+  status       ExecutionStatus @default(RUNNING)
+  tasksDone    Int             @default(0)
+  totalTasks   Int?
+  result       Json?
+  pausedNodeId String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  metadata     Json?
 }
 
-enum Platform {
-  email
-  telegram
-  whatsapp
+model Form {
+  id          String           @id @default(uuid())
+  workflowId  String
+  workflow    Workflow         @relation(fields: [workflowId], references: [id])
+  nodeId      String
+  fields      Json
+  submissions FormSubmission[]
 }
 
-enum TriggerType {
-  Manual
-  Webhook
+model FormSubmission {
+  id        String   @id @default(uuid())
+  formId    String
+  form      Form     @relation(fields: [formId], references: [id])
+  data      Json
+  createdAt DateTime @default(now())
 }

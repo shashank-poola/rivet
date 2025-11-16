@@ -1,10 +1,10 @@
 -- CreateEnum
-CREATE TYPE "public"."Platform" AS ENUM ('email', 'telegram', 'whatsapp');
+CREATE TYPE "public"."Platform" AS ENUM ('EMAIL', 'TELEGRAM', 'GEMINI');
 
 -- CreateEnum
-CREATE TYPE "public"."TriggerType" AS ENUM ('Manual', 'Webhook');
+CREATE TYPE "public"."TriggerType" AS ENUM ('MANUAL', 'WEBHOOK');
 
--- CreateTable
+-- CreateTable of user login with juwt
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE "public"."User" (
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- creadentials of overall rivet
 CREATE TABLE "public"."Credentials" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE "public"."Credentials" (
     CONSTRAINT "Credentials_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable of WorkFlow
 CREATE TABLE "public"."Workflow" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE "public"."Workflow" (
     CONSTRAINT "Workflow_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable of individual Node
 CREATE TABLE "public"."Node" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE "public"."Node" (
     CONSTRAINT "Node_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable of Webhook like (EMAIL, TELEGRAM, GEMINI)
 CREATE TABLE "public"."Webhook" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE "public"."Webhook" (
     CONSTRAINT "Webhook_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable of Execution of node to node connection which is execution
 CREATE TABLE "public"."Execution" (
     "id" TEXT NOT NULL,
     "workflowId" TEXT NOT NULL,

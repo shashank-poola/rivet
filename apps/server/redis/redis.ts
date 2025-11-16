@@ -1,4 +1,4 @@
-import { redis } from "../../../packages/exports/redis/index.js";
+import { redis } from "../../../packages/exports/redis/redis.js";
 
 
 interface Queue {
