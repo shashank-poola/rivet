@@ -5,9 +5,10 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "resend": "^4.0.1",
+    "@prisma/client": "^6.16.1",
     "mustache": "^4.2.0",
-    "@prisma/client": "^6.16.1"
+    "node-fetch": "^3.3.2",
+    "resend": "^4.0.1"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.6",
