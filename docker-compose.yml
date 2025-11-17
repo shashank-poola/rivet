@@ -5,9 +5,9 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: n8n_db
+      POSTGRES_DB: database_db
     ports:
       - "5432:5432"
     volumes:
@@ -26,7 +26,7 @@ services:
       - postgres
       - redis
     environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/n8n_db?schema=public"
+      DATABASE_URL: "postgresql://user:password@postgres:5432/database_db?schema=public"
       REDIS_URL: "redis://redis:6379"
     ports:
       - "3000:3000"
