@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../../apps/server/node_modules/@prisma/client"
@@ -18,6 +12,7 @@ enum Platform {
   TELEGRAM
   RESEND_EMAIL
   GEMINI
+  GROQ
 }
 
 enum TriggerType {
@@ -26,6 +21,7 @@ enum TriggerType {
 }
 
 enum ExecutionStatus {
+  PENDING
   RUNNING
   PAUSED
   COMPLETED
@@ -55,9 +51,9 @@ model Workflow {
   user        User        @relation(fields: [userId], references: [id])
   title       String
   enabled     Boolean     @default(false)
-  nodesJson   Json? // rename to avoid conflict with relation
+  nodesJson   Json?
   connections Json?
-  nodes       Node[] // FIXED relation for Node[]
+  nodes       Node[]
   webhookId   String?     @unique
   webhook     Webhook?    @relation(fields: [webhookId], references: [id])
   triggerType TriggerType
@@ -77,14 +73,14 @@ model Webhook {
   id       String    @id @default(uuid())
   title    String
   secret   String?
-  workflow Workflow?
+  Workflow Workflow?
 }
 
 model Execution {
   id           String          @id @default(uuid())
   workflowId   String
   workflow     Workflow        @relation(fields: [workflowId], references: [id])
-  status       ExecutionStatus @default(RUNNING)
+  status       ExecutionStatus @default(PENDING)
   tasksDone    Int             @default(0)
   totalTasks   Int?
   result       Json?
