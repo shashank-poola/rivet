@@ -1,4 +1,6 @@
-import prisma from "@prisma/client"; 
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient(); 
 
 export const nodeDetails = {
   type: "form",
@@ -26,7 +28,7 @@ export async function runFormNode(
     if (!node) throw new Error("Node is required");
 
     // lookup form entry based on workflowId + nodeId
-    const form = await prisma.form.findUnique({
+    const formRecord = await prisma.form.findUnique({
       where: {
         workflowId_nodeId: {
           workflowId,
@@ -35,14 +37,14 @@ export async function runFormNode(
       },
     });
 
-    if (!form) {
+    if (!formRecord) {
       throw new Error("Form not found for this workflow node");
     }
 
     // returning this makes it easier for frontend
     return {
-      formId: form.id,
-      url: `/forms/${form.id}`,
+      formId: formRecord.id,
+      url: `/forms/${formRecord.id}`,
       message: "Form node triggered. Workflow paused.",
     };
   } catch (err: any) {

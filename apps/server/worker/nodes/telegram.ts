@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import { prisma } from "@prisma/client"; 
+import { PrismaClient } from "@prisma/client";
 import Mustache from "mustache";
 import fetch from "node-fetch";
 import { z } from "zod";
+
+const prisma = new PrismaClient();
 
 export const nodeDetails = {
   type: "telegram",
@@ -12,24 +14,19 @@ export const nodeDetails = {
   icon: "📱",
 };
 
-// ----------------------
-// Validators
-// ----------------------
 const templateSchema = z.object({
   message: z.string().optional(),
 });
 
 const contextSchema = z.record(z.any());
 
-// ----------------------
-// Telegram Send Function
-// ----------------------
 export async function sendTelegramMessage(
   credentialId: string,
   template: any,
   context: any
 ) {
-  // 1. Fetch credential from DB
+
+  // Fetching credentials from db
   const credential = await prisma.credentials.findFirst({
     where: { id: credentialId },
   });
@@ -47,10 +44,10 @@ export async function sendTelegramMessage(
     throw new Error("You have not provided both the botToken and chatId");
   }
 
-  // 2. Render Mustache template
+  // Render Mustache template
   const msg = Mustache.render(template?.message || "", context);
 
-  // 3. Call Telegram API
+  // Call Telegram API
   const url = `https://api.telegram.org/bot${apiKey}/sendMessage`;
 
   const payload = {
@@ -76,9 +73,7 @@ export async function sendTelegramMessage(
   };
 }
 
-// ----------------------
-// Express Route
-// ----------------------
+
 export const telegramHandler = async (req: Request, res: Response) => {
   try {
     const { credentialId, template, context } = req.body;

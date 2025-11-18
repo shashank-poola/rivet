@@ -1,20 +1,18 @@
-
-// apps/server/src/Workers/worker.ts
-import Redis from "redis";
+import CreateClient from "redis";
 import { PrismaClient } from "@prisma/client";
-import { runNode } from "./nodes/runNode/runner"; // adjust path to your runner
+import { runNode } from "./nodes/runNode/runner"; 
 import { setTimeout as sleep } from "timers/promises";
 
 const prisma = new PrismaClient();
 
-// Redis client (node-redis v5 style)
+// redis client
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 const QUEUE_KEY = process.env.RIVET_QUEUE_KEY || "rivet:queue";
 
 const redisClient = Redis.createClient({ url: REDIS_URL });
 
 redisClient.on("error", (error: any) => {
-  console.error("Redis Client Error", error: any);
+  console.error("Redis Client Error", error);
 });
 
 async function connectRedis() {
