@@ -15,15 +15,16 @@ router.post("/auth/signup", signup);
 router.post("/auth/signin", signin);
 router.post("/auth/logout", logout);
 
-router.get("/personal", personal);
-router.get("/overview", overview, requireAuth);
+// TODO: Implement these routes
+// router.get("/personal", personal);
+// router.get("/overview", overview, requireAuth);
 
-router.get("/workflows");
-router.post("/workflows")
-router.post("/workflows/{workflow:id}", workflows, requireAuth);
-router.put("/workflows/{workflow:id       }")
+// router.get("/workflows");
+// router.post("/workflows")
+// router.post("/workflows/:workflowId", workflows, requireAuth);
+// router.put("/workflows/:workflowId")
 
-router.get("/templates");
+// router.get("/templates");
 
 router.post("/credentials", requireAuth, postCredentials);
 router.get("/credentials", requireAuth, getCredentials);

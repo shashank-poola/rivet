@@ -1,6 +1,6 @@
 import  { Request, Response } from "express";
-import { PrismaClient } from "../../prisma/generated/prisma/index.js";
-import type { Prisma } from "../../prisma/generated/prisma/index.js";
+import { Prisma, PrismaClient } from "@prisma/client";
+import type { JsonValue } from "@prisma/client/runtime/library";
 import { CredentialsSchema, CredentialsUpdateSchema } from "../types/schema.js";
 
 const prisma = new PrismaClient();
@@ -29,7 +29,7 @@ export const postCredentials = async (req: AuthRequest, res: Response) => {
         data: {
             title: data.title,
             platform: data.platform,
-                data: data.data as Prisma.InputJsonValue,
+            data: data.data as JsonValue,
             userId: req.user.id,
         }
     });
@@ -95,7 +95,7 @@ export const updateCredentials = async (req: AuthRequest, res: Response) => {
         data: {
             ...(updatedCreds.title && { title: updatedCreds.title }),
             ...(updatedCreds.platform && { platform: updatedCreds.platform }),
-            ...(updatedCreds.data && { data: updatedCreds.data as Prisma.InputJsonValue }),
+            ...(updatedCreds.data && { data: updatedCreds.data as JsonValue }),
         }
     });
     
