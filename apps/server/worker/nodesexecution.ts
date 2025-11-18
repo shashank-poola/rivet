@@ -1,6 +1,6 @@
-import CreateClient from "redis";
+import { createClient } from "redis";
 import { PrismaClient } from "@prisma/client";
-import { runNode } from "./nodes/runNode/runner"; 
+import { runNode } from "./nodes/runNode/runner";
 import { setTimeout as sleep } from "timers/promises";
 
 const prisma = new PrismaClient();
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 const QUEUE_KEY = process.env.RIVET_QUEUE_KEY || "rivet:queue";
 
-const redisClient = Redis.createClient({ url: REDIS_URL });
+const redisClient = createClient({ url: REDIS_URL });
 
 redisClient.on("error", (error: any) => {
   console.error("Redis Client Error", error);
@@ -21,26 +21,21 @@ async function connectRedis() {
   }
 }
 
-/**
- * Add a job object to redis queue (RPUSH)
- */
+// Adding job to redis queue
 export async function addToQueue(job: unknown) {
   await connectRedis();
   const payload = JSON.stringify(job);
   await redisClient.rPush(QUEUE_KEY, payload);
 }
 
-/**
- * Get a job from queue using BLPOP with timeout (seconds)
- * returns parsed job or null if none
- */
+
 export async function getFromQueue(timeoutSeconds = 2) {
   await connectRedis();
-  // BLPOP returns [key, value] or null
+  // BLPOP returns { key, element } or null in redis v5
   try {
-    const res = await redisClient.bLPop(QUEUE_KEY, timeoutSeconds);
+    const res = await redisClient.blPop(QUEUE_KEY, timeoutSeconds);
     if (!res) return null;
-    const payload = res.element ?? res.element; // depending on client shape
+    const payload = typeof res.element === 'string' ? res.element : res.element.toString();
     if (!payload) return null;
     try {
       return JSON.parse(payload);
@@ -54,20 +49,11 @@ export async function getFromQueue(timeoutSeconds = 2) {
   }
 }
 
-/**
- * Helper to get "now" timestamp in milliseconds
- * (Python used event loop time; we use epoch ms)
- */
 function nowMs() {
   return Date.now();
 }
 
-/**
- * Update execution result and status after a node finishes.
- * Assumes:
- * - Execution has columns: id (string), result (Json), tasks_done (int), total_tasks (int), status (string), paused_node_id (string | null)
- * - result is JSON object with nodeResults object inside
- */
+
 async function updateExecution(
   executionId: string,
   nodeId: string,
@@ -110,9 +96,7 @@ async function updateExecution(
   console.log(`Execution updated: ${executionId}, tasks_done=${newTasksDone}, total=${totalTasks}`);
 }
 
-/**
- * Main loop that pops jobs and processes them.
- */
+
 async function processJobs() {
   console.log("Worker started...");
   await connectRedis();
@@ -120,7 +104,7 @@ async function processJobs() {
   while (true) {
     try {
       console.log("Waiting for a job...");
-      const job = await getFromQueue(2); // 2 second timeout (like the python code)
+      const job = await getFromQueue(2); 
       if (!job) {
         // no job found, small sleep to avoid tight loop
         await sleep(100);
@@ -133,7 +117,7 @@ async function processJobs() {
       const jobType: string = (job as any).type;
       let nodeResult: any = {};
 
-      // Use a transaction-like pattern per job where needed (but simple reads/writes here)
+
       if (jobType === "form") {
         try {
           const executionId = (job as any).data?.executionId;
@@ -161,7 +145,7 @@ async function processJobs() {
       if (jobType === "webhook") {
         nodeResult = (job as any).data?.context ?? {};
       } else if (jobType !== "manual") {
-        // Prepare node config similar to Python
+
         const nodeData = (job as any).data?.nodeData ?? {};
         const config =
           typeof nodeData?.data === "object" && nodeData?.data !== null
@@ -288,9 +272,7 @@ async function processJobs() {
   }
 }
 
-/**
- * start worker
- */
+// starting worker
 (async () => {
   try {
     await connectRedis();

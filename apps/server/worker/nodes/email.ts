@@ -1,4 +1,4 @@
-import mustache from "mustache";
+import * as mustache from "mustache";
 import { Resend } from "resend";
 import { PrismaClient } from "@prisma/client";
 

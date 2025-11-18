@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import Mustache from "mustache";
+import * as Mustache from "mustache";
 import fetch from "node-fetch";
 import { z } from "zod";
 

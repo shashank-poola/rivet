@@ -10,13 +10,7 @@ export const nodeDetails = {
   icon: "📝",
 };
 
-/**
- * Main Form Node Runner
- * 
- * The worker will pause the execution automatically.
- * This node simply returns the form metadata so the UI
- * can show the form link.
- */
+
 export async function runFormNode(
   node: any,
   context: Record<string, any>,
