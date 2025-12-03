@@ -6,7 +6,14 @@ import { PrismaClient } from "@prisma/client";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "123";
 
-const prisma = new PrismaClient();
+let prisma: PrismaClient | null = null;
+
+const getPrisma = () => {
+  if (!prisma) {
+    prisma = new PrismaClient();
+  }
+  return prisma;
+};
 
 export const signup = async (req: Request, res: Response) => {
     try {
@@ -18,7 +25,7 @@ export const signup = async (req: Request, res: Response) => {
         const user = response.data;
 
         // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await getPrisma().user.findUnique({
             where: { email: user.email }
         });
         
@@ -31,7 +38,7 @@ export const signup = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(user.password, salt);
 
         // Create new user in database
-        const newUser = await prisma.user.create({
+        const newUser = await getPrisma().user.create({
             data: {
                 email: user.email,
                 password: hashedPassword
@@ -62,7 +69,7 @@ export const signin = async (req: Request, res: Response) => {
         const user = response.data;
 
         // Find user in database
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await getPrisma().user.findUnique({
             where: { email: user.email }
         });
         
