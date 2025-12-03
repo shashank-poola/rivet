@@ -6,7 +6,7 @@ import {
   getCredentials,
   postCredentials,
   updateCredentials,
-} from "../controller/credentials.js";
+} from "./credentials.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router: ExpressRouter = Router();
