@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import routes from "./routes/routes.js";
 
-dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env" : ".env.local" });
+dotenv.config();
 
 const app: express.Application = express();
 
