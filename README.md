@@ -19,7 +19,7 @@ It enables developers and teams to **build, automate, and scale workflows** usin
 ---
 
 ## System architecture
-![architecture](/rivet/apps/web/src/assets/architecture.png)
+![architecture](apps/web/src/assets/architecture.png)
 
 ## Getting Started
 
@@ -29,7 +29,7 @@ It enables developers and teams to **build, automate, and scale workflows** usin
 - **PostgreSQL / SQLite / MySQL** (for persistent data)  
 
 ## Live Preview
-![livepreview](/rivet/apps/web/src/assets/livepreview.png)
+![livepreview](apps/web/src/assets/livepreview.png)
 
 ### Installation
 
