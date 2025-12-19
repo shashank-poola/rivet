@@ -18,6 +18,9 @@ It enables developers and teams to **build, automate, and scale workflows** usin
 
 ---
 
+## System architecture
+![architecture](/rivet/apps/web/src/assets/architecture.png)
+
 ## Getting Started
 
 ### Prerequisites
@@ -25,12 +28,19 @@ It enables developers and teams to **build, automate, and scale workflows** usin
 - **pnpm** or **npm/yarn**  
 - **PostgreSQL / SQLite / MySQL** (for persistent data)  
 
+## Live Preview
+![livepreview](/rivet/apps/web/src/assets/livepreview.png)
+
 ### Installation
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/flowengine.git
-cd flowengine
-```bash
+git clone https://github.com/shashank-poola/rivet.git
+cd rivet
 
+bun install
+
+bun run dev
+
+```bash

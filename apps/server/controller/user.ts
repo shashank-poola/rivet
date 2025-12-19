@@ -2,18 +2,9 @@ import type { Request, Response } from "express";
 import { SignupSchema, SigninSchema } from "../types/schema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@rivet-n8n/prisma-db";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "123";
-
-let prisma: PrismaClient | null = null;
-
-const getPrisma = () => {
-  if (!prisma) {
-    prisma = new PrismaClient();
-  }
-  return prisma;
-};
 
 export const signup = async (req: Request, res: Response) => {
     try {
@@ -25,7 +16,7 @@ export const signup = async (req: Request, res: Response) => {
         const user = response.data;
 
         // Check if user already exists
-        const existingUser = await getPrisma().user.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { email: user.email }
         });
         
@@ -38,7 +29,7 @@ export const signup = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(user.password, salt);
 
         // Create new user in database
-        const newUser = await getPrisma().user.create({
+        const newUser = await prisma.user.create({
             data: {
                 email: user.email,
                 password: hashedPassword
@@ -69,7 +60,7 @@ export const signin = async (req: Request, res: Response) => {
         const user = response.data;
 
         // Find user in database
-        const existingUser = await getPrisma().user.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { email: user.email }
         });
         

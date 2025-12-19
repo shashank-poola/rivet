@@ -1,9 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@rivet-n8n/prisma-db";
 import { JWT_SECRET } from "../controller/user.js";
-
-const prisma = new PrismaClient();
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
 	try {

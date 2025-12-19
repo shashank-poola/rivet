@@ -1,9 +1,6 @@
 import  { Request, Response } from "express";
-import { Prisma, PrismaClient } from "@prisma/client";
-import type { JsonValue } from "@prisma/client/runtime/library";
 import { CredentialsSchema, CredentialsUpdateSchema } from "../types/schema.js";
-
-const prisma = new PrismaClient();
+import prisma from "@rivet-n8n/prisma-db";
 
 export interface AuthRequest extends Request {
     user?: {
@@ -29,7 +26,7 @@ export const postCredentials = async (req: AuthRequest, res: Response) => {
         data: {
             title: data.title,
             platform: data.platform,
-            data: data.data as JsonValue,
+            data: data.data,
             userId: req.user.id,
         }
     });
@@ -95,7 +92,7 @@ export const updateCredentials = async (req: AuthRequest, res: Response) => {
         data: {
             ...(updatedCreds.title && { title: updatedCreds.title }),
             ...(updatedCreds.platform && { platform: updatedCreds.platform }),
-            ...(updatedCreds.data && { data: updatedCreds.data as JsonValue }),
+            ...(updatedCreds.data && { data: updatedCreds.data }),
         }
     });
     

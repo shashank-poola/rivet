@@ -20,6 +20,10 @@
   "engines": {
     "node": ">=20"
   },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "dependencies": {
     "@prisma/client": "^6.16.1",
     "@types/bcrypt": "^6.0.0",

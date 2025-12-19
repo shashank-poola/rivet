@@ -1,7 +1,7 @@
-import sendEmail from "../email";
-import { sendTelegramMessage } from "../telegram";
-import { runGeminiAgent } from "../gemini/gemini";
-import { runFormNode } from "../form";
+import sendEmail from "../email.js";
+import { sendTelegramMessage } from "../telegram.js";
+import { runGeminiAgent } from "../gemini/gemini.js";
+import { runFormNode } from "../form.js";
 
 export async function runNode(
   node: any,

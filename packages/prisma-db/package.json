@@ -1,5 +1,5 @@
 {
-  "name": "prisma-db",
+  "name": "@rivet-n8n/prisma-db",
   "module": "index.ts",
   "type": "module",
   "private": true,

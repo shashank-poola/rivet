@@ -12,13 +12,13 @@ export const SigninSchema = z.object({
 
 export const CredentialsSchema = z.object({
     title: z.string().min(1, "Title is required"),
-    platform: z.enum(["email", "telegram", "whatsapp"]),
+    platform: z.enum(["TELEGRAM", "RESEND_EMAIL", "GEMINI", "GROQ"]),
     data: z.record(z.string(), z.any()),
 });
 
 export const CredentialsUpdateSchema = z.object({
     title: z.string().min(1, "Title is required").optional(),
-    platform: z.enum(["email", "telegram", "whatsapp"]).optional(),
+    platform: z.enum(["TELEGRAM", "RESEND_EMAIL", "GEMINI", "GROQ"]).optional(),
     data: z.record(z.string(), z.any()).optional(),
 });
 
