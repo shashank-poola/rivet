@@ -8,106 +8,116 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Electric Violet Primary */
-    --primary: 277 99% 48%;
+    /* Primary - Rivet Red #E84326 */
+    --primary: 8 79% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 277 99% 68%;
+    --primary-glow: 8 79% 63%;
     
-    /* Feta green accent color */
-    --feta: 108 67% 95%;
+    /* Secondary - Warm Cream #E4DDDA */
+    --secondary: 24 15% 87%;
+    --secondary-foreground: 13 12% 14%;
     
-    /* Port Gore - Dark text */
-    --foreground: 232 34% 20%;
+    /* Foreground - Dark Brown #28221F (instead of black) */
+    --foreground: 13 12% 14%;
+    
+    /* Background - Pure White #FFFFFF */
     --background: 0 0% 100%;
     
-    /* Feta - Light accent */
-    --accent: 96 84% 95%;
-    --accent-foreground: 232 34% 20%;
-    
+    /* Card Background - Pure White #FFFFFF */
     --card: 0 0% 100%;
-    --card-foreground: 232 34% 20%;
+    --card-foreground: 13 12% 14%;
+    
+    /* Card Line/Border - Warm Gray #E3DCD9 */
+    --border: 24 12% 87%;
+    
+    /* Selected/Active state background #EEE9E7 */
+    --selected: 24 15% 92%;
+    --card-border: 9 73% 76%;
+    
+    /* Accent - Primary Red for active states */
+    --accent: 8 79% 53%;
+    --accent-foreground: 0 0% 100%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 232 34% 20%;
+    --popover-foreground: 13 12% 14%;
     
-    --secondary: 232 34% 98%;
-    --secondary-foreground: 232 34% 20%;
+    --muted: 24 15% 87%;
+    --muted-foreground: 13 12% 40%;
     
-    --muted: 232 10% 96%;
-    --muted-foreground: 232 10% 45%;
-    
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 8 79% 53%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 232 20% 90%;
-    --input: 232 20% 90%;
-    --ring: 277 99% 48%;
+    --input: 24 12% 87%;
+    --ring: 8 79% 53%;
     
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(277 99% 48%), hsl(277 99% 68%));
-    --gradient-glow: radial-gradient(circle at center, hsl(277 99% 48% / 0.15), transparent 70%);
+    --gradient-hero: linear-gradient(135deg, hsl(8 79% 53%), hsl(8 79% 63%));
+    --gradient-glow: radial-gradient(circle at center, hsl(8 79% 53% / 0.15), transparent 70%);
     
     /* Shadows */
-    --shadow-primary: 0 10px 40px -15px hsl(277 99% 48% / 0.3);
-    --shadow-card: 0 4px 20px hsl(232 34% 20% / 0.08);
+    --shadow-primary: 0 10px 40px -15px hsl(8 79% 53% / 0.3);
+    --shadow-card: 0 4px 20px hsl(13 12% 14% / 0.08);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 13 12% 14%;
+    --sidebar-primary: 8 79% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 24 15% 92%;
+    --sidebar-accent-foreground: 13 12% 14%;
+    --sidebar-border: 24 12% 87%;
+    --sidebar-ring: 8 79% 53%;
   }
 
   .dark {
-    --background: 232 34% 12%;
+    /* Primary - Rivet Red (slightly brighter for dark mode) */
+    --primary: 8 79% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 8 79% 68%;
+    
+    /* Background - Dark Brown #28221F */
+    --background: 13 12% 14%;
     --foreground: 0 0% 98%;
     
-    --primary: 277 99% 58%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 277 99% 78%;
-    
-    --accent: 96 50% 20%;
-    --accent-foreground: 0 0% 98%;
-    
-    --card: 232 34% 16%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 232 34% 16%;
-    --popover-foreground: 0 0% 98%;
-    
-    --secondary: 232 34% 18%;
+    /* Secondary */
+    --secondary: 13 12% 20%;
     --secondary-foreground: 0 0% 98%;
     
-    --muted: 232 20% 25%;
-    --muted-foreground: 232 10% 65%;
+    /* Card */
+    --card: 13 12% 18%;
+    --card-foreground: 0 0% 98%;
     
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 0 0% 98%;
+    /* Border */
+    --border: 9 50% 40%;
+    --card-border: 9 50% 40%;
     
-    --border: 232 20% 25%;
-    --input: 232 20% 25%;
-    --ring: 277 99% 58%;
+    /* Accent */
+    --accent: 8 79% 58%;
+    --accent-foreground: 0 0% 100%;
     
-    --sidebar-background: 232 34% 10%;
+    --popover: 13 12% 18%;
+    --popover-foreground: 0 0% 98%;
+    
+    --muted: 13 12% 25%;
+    --muted-foreground: 13 12% 65%;
+    
+    --destructive: 8 79% 58%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --input: 9 50% 40%;
+    --ring: 8 79% 58%;
+    
+    /* Sidebar */
+    --sidebar-background: 13 12% 12%;
     --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 277 99% 58%;
+    --sidebar-primary: 8 79% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 232 34% 16%;
+    --sidebar-accent: 13 12% 18%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 232 20% 20%;
-    --sidebar-ring: 277 99% 58%;
+    --sidebar-border: 9 50% 30%;
+    --sidebar-ring: 8 79% 58%;
   }
 }
 
@@ -117,6 +127,77 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(8 79% 53% / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(8 79% 53% / 0.5);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-orbit {
+  animation: orbit 20s linear infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }

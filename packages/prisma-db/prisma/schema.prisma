@@ -28,11 +28,12 @@ enum ExecutionStatus {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  email       String        @unique
-  password    String
-  credentials Credentials[]
-  workflows   Workflow[]
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  lastLoggedIn DateTime?
+  credentials  Credentials[]
+  workflows    Workflow[]
 }
 
 model Credentials {

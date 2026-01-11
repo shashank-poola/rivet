@@ -1,85 +1,119 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Workflow, Key, PlayCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { CredentialsDialog } from "@/components/CredentialsDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Workflow, Key, PlayCircle } from "lucide-react";
-import profileBg from "@/assets/profile-bg.png";
+
+type TabType = "workflows" | "credentials" | "executions";
 
 const Personal = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<TabType>("workflows");
+  const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [workflowName, setWorkflowName] = useState("");
-  
-  // Mock user data - will be replaced with actual auth
-  const userEmail = "shashank@example.com";
-  const userName = userEmail.split("@")[0].split(".").map(n => n.charAt(0).toUpperCase() + n.slice(1)).join(" ");
-  const userInitials = userName.split(" ").map(n => n[0]).join("");
+
+  const tabs = [
+    { id: "workflows" as TabType, label: "Workflows" },
+    { id: "credentials" as TabType, label: "Credentials" },
+    { id: "executions" as TabType, label: "Executions" },
+  ];
 
   const handleCreateWorkflow = () => {
     if (workflowName.trim()) {
-      navigate(`/personal/workflows/${Date.now()}`);
+      navigate(`/workflow-editor/${Date.now()}`);
       setShowCreateDialog(false);
       setWorkflowName("");
     }
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "workflows":
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-foreground">Workflows owned by you</h2>
+              <Button size="sm" className="gap-2" onClick={() => setShowCreateDialog(true)}>
+                <Plus className="h-4 w-4" />
+                New Workflow
+              </Button>
+            </div>
+            <div className="border border-border rounded-lg p-8 bg-card text-center">
+              <Workflow className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-semibold text-foreground mb-2">No workflows yet</h3>
+              <p className="text-sm text-muted-foreground">Create your first workflow to get started.</p>
+            </div>
+          </div>
+        );
+      case "credentials":
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-foreground">Your Credentials</h2>
+              <Button size="sm" className="gap-2" onClick={() => setShowCredentialsDialog(true)}>
+                <Plus className="h-4 w-4" />
+                Add Credential
+              </Button>
+            </div>
+            <div className="border border-border rounded-lg p-8 bg-card text-center">
+              <Key className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-semibold text-foreground mb-2">No credentials configured</h3>
+              <p className="text-sm text-muted-foreground">Add credentials to connect to external services.</p>
+            </div>
+          </div>
+        );
+      case "executions":
+        return (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-foreground">Recent Executions</h2>
+            <div className="border border-border rounded-lg p-8 bg-card text-center">
+              <PlayCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-semibold text-foreground mb-2">No executions yet</h3>
+              <p className="text-sm text-muted-foreground">Run a workflow to see execution history.</p>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
-    <div className="h-full w-full bg-background p-8 overflow-auto">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* User Profile */}
-        <div className="flex items-center gap-4">
-          <Avatar className="h-16 w-16 relative">
-            <AvatarImage src={profileBg} alt="Profile background" className="object-cover" />
-            <AvatarFallback className="bg-primary text-primary-foreground text-xl font-semibold">
-              {userInitials}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">{userName}</h1>
-            <p className="text-muted-foreground">{userEmail}</p>
-          </div>
-        </div>
-
-        {/* Workflows Section */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-foreground">Workflows owned by you</h2>
-            <Button onClick={() => setShowCreateDialog(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Workflow
-            </Button>
-          </div>
-
-          <div className="grid gap-4">
-            <div className="border border-border rounded-lg p-6 bg-card">
-              <div className="flex items-center gap-3 mb-2">
-                <Workflow className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Workflows</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">No workflows yet. Create your first workflow to get started.</p>
-            </div>
-
-            <div className="border border-border rounded-lg p-6 bg-card">
-              <div className="flex items-center gap-3 mb-2">
-                <Key className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Credentials</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">No credentials configured yet.</p>
-            </div>
-
-            <div className="border border-border rounded-lg p-6 bg-card">
-              <div className="flex items-center gap-3 mb-2">
-                <PlayCircle className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Executions</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">No executions yet.</p>
-            </div>
+    <div className="h-full w-full bg-background">
+      {/* Tabs */}
+      <div className="border-b border-border">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="flex">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-4 text-sm font-medium transition-colors relative ${
+                  activeTab === tab.id
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* Content */}
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
+          {renderContent()}
+        </div>
+      </div>
+
+      <CredentialsDialog open={showCredentialsDialog} onOpenChange={setShowCredentialsDialog} />
 
       {/* Create Workflow Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>

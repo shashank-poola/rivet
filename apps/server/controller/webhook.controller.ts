@@ -1,8 +1,8 @@
-// apps/server/src/controllers/webhook/handleWebhookCall.ts
-import prisma from "../../lib/prisma";
-import { redisClient, addToQueue } from "../../redis/index";
+import { Request, Response } from "express";
+import prisma from "../db.js";
+import { addToQueue } from "../redis/redis.js";
 
-export async function handleWebhookCall(req, res) {
+export async function handleWebhookCall(req: Request, res: Response) {
   try {
     const webhookId = req.params.webhookId;
     const headers = req.headers;
@@ -20,14 +20,14 @@ export async function handleWebhookCall(req, res) {
       });
     }
 
-    const nodes = workflow.nodesJson ?? {};
-    const connections = workflow.connections ?? {};
+    const nodes = (workflow.nodesJson as Record<string, any>) ?? {};
+    const connections = (workflow.connections as Record<string, string[]>) ?? {};
 
     // 2. Find trigger node
     let triggerNodeId: string | null = null;
 
     for (const nodeId in nodes) {
-      const node = nodes[nodeId];
+      const node = nodes[nodeId] as any;
       if (node.type === "webhook") {
         triggerNodeId = nodeId;
         break;
@@ -76,14 +76,14 @@ export async function handleWebhookCall(req, res) {
     // 6. Create first job
     const firstJob = {
       id: `${triggerNodeId}-${newExecution.id}`,
-      type: "webhook",
+      type: "webhook" as const,
       data: {
         executionId: newExecution.id,
         workflowId: workflow.id,
         nodeId: triggerNodeId,
-        nodeData: nodes[triggerNodeId],
+        nodeData: (nodes[triggerNodeId] as any),
         context: webhookContext,
-        connections: connections[triggerNodeId] ?? [],
+        connections: (connections[triggerNodeId] ?? []) as string[],
       },
     };
 

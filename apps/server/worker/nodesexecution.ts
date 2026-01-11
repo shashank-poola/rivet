@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { PrismaClient } from "@prisma/client";
-import { runNode } from "./nodes/runNode/runner";
+import { runNode } from "./nodes/runNode/runner.js";
 import { setTimeout as sleep } from "timers/promises";
 
 const prisma = new PrismaClient();
@@ -227,7 +227,8 @@ async function processJobs() {
         if (workflowId && Array.isArray((job as any).data?.connections) && (job as any).data?.connections.length > 0) {
           const workflow = await prisma.workflow.findUnique({ where: { id: workflowId } });
           if (workflow) {
-            const nodes = (workflow.nodes as any) ?? {};
+            // Handle both nodesJson (from webhook) and nodes (from manual execution)
+            const nodes = (workflow.nodesJson as any) ?? (workflow.nodes as any) ?? {};
             const connections = (workflow.connections as any) ?? {};
             const updatedContext = {
               ...( (job as any).data?.context ?? {} ),

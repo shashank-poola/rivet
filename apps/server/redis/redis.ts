@@ -1,12 +1,12 @@
-import { redis } from "../../../packages/exports/redis/redis.js";
+import { redis } from "../../../packages/redis/redis.js";
 
 
 interface Queue {
   id: string;
-  type: "telegram" | "email" | "ai-agent" | "form";
+  type: "telegram" | "email" | "gemini" | "form" | "webhook" | "manual";
   data: {
     executionId: string;
-    credentialId: string;
+    credentialId?: string;
     nodeId: string;
     workflowId: string;
     nodeData: any;
@@ -15,7 +15,8 @@ interface Queue {
   };
 }
 
-const QUEUE_NAME = "workflow-queue";
+// Use same queue name as worker for compatibility
+const QUEUE_NAME = process.env.RIVET_QUEUE_KEY || process.env.WORKFLOW_QUEUE_NAME || "rivet:queue";
 
 export const addToQueue = async (job: Queue) => {
   try {

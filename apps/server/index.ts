@@ -7,7 +7,15 @@ import routes from "./routes/routes.js";
 
 dotenv.config();
 
-const app: express.Application = express();
+// Start worker process (runs in background, doesn't block server)
+// Worker will process jobs from Redis queue
+if (process.env.START_WORKER !== "false") {
+  import("./worker/nodesexecution.js").catch((err) => {
+    console.error("Failed to start worker:", err);
+  });
+}
+
+const app = express();
 
 app.use(cors({
   origin: [
@@ -24,7 +32,7 @@ app.use("/api", routes);
 
 const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 export default app;

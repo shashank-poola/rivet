@@ -3,10 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import rivetLogo from "@/assets/rivet-logo.png";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,12 +17,16 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // TODO: Add actual authentication logic
-    setTimeout(() => {
+
+    try {
+      await signIn(email, password);
+      toast.success("Signed in successfully");
+      navigate("/personal");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign in");
+    } finally {
       setLoading(false);
-      navigate("/overview");
-    }, 1000);
+    }
   };
 
   return (

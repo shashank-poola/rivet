@@ -43,7 +43,7 @@ export const signup = async (req: Request, res: Response) => {
             secure: process.env.NODE_ENV === "production",
         });
 
-        return res.json({ id: newUser.id, email: newUser.email });
+        return res.json({ token, user: { id: newUser.id, email: newUser.email } });
     } catch (error) {
         console.error("Signup error:", error);
         return res.status(500).json({ message: "Internal server error" });
@@ -81,7 +81,7 @@ export const signin = async (req: Request, res: Response) => {
             secure: process.env.NODE_ENV === "production",
         });
 
-        return res.json({ id: existingUser.id, email: existingUser.email });
+        return res.json({ token, user: { id: existingUser.id, email: existingUser.email } });
     } catch (error) {
         console.error("Signin error:", error);
         return res.status(500).json({ message: "Internal server error" });
