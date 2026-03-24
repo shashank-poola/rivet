@@ -1,6 +1,5 @@
 import { redis } from "../../../packages/redis/redis.js";
 
-
 interface Queue {
   id: string;
   type: "telegram" | "email" | "gemini" | "form" | "webhook" | "manual";
@@ -15,7 +14,6 @@ interface Queue {
   };
 }
 
-// Use same queue name as worker for compatibility
 const QUEUE_NAME = process.env.RIVET_QUEUE_KEY || process.env.WORKFLOW_QUEUE_NAME || "rivet:queue";
 
 export const addToQueue = async (job: Queue) => {

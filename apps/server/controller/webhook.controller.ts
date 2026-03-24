@@ -23,7 +23,7 @@ export async function handleWebhookCall(req: Request, res: Response) {
     const nodes = (workflow.nodesJson as Record<string, any>) ?? {};
     const connections = (workflow.connections as Record<string, string[]>) ?? {};
 
-    // 2. Find trigger node
+    
     let triggerNodeId: string | null = null;
 
     for (const nodeId in nodes) {

@@ -5,7 +5,6 @@ import { setTimeout as sleep } from "timers/promises";
 
 const prisma = new PrismaClient();
 
-// redis client
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 const QUEUE_KEY = process.env.RIVET_QUEUE_KEY || "rivet:queue";
 
@@ -210,7 +209,7 @@ async function processJobs() {
         continue;
       }
 
-      // Update execution state after node completes
+      
       try {
         await updateExecution(
           (job as any).data?.executionId,
@@ -221,13 +220,13 @@ async function processJobs() {
         console.error("Error updating execution:", err);
       }
 
-      // Enqueue next nodes from workflow connections
+      
       try {
         const workflowId = (job as any).data?.workflowId;
         if (workflowId && Array.isArray((job as any).data?.connections) && (job as any).data?.connections.length > 0) {
           const workflow = await prisma.workflow.findUnique({ where: { id: workflowId } });
           if (workflow) {
-            // Handle both nodesJson (from webhook) and nodes (from manual execution)
+
             const nodes = (workflow.nodesJson as any) ?? (workflow.nodes as any) ?? {};
             const connections = (workflow.connections as any) ?? {};
             const updatedContext = {
