@@ -292,7 +292,7 @@ Form nodes pause workflow execution. When encountered:
 
 ## Documentation
 
-![documentation](apps/web/src/public/demo/docs.png)
+![documentation](apps/web/public/demo/docs.png)
 
 ## Philosophy
 
