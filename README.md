@@ -12,11 +12,11 @@ A modern, open-source workflow automation platform that lets you connect APIs, s
 
 ## System Architecture
 
-![architecture](apps/web/src/public/demo/architecture.png)
+![architecture](apps/web/public/demo/architecture.png)
 
 ## Live Preview
 
-![livepreview](apps/web/src/public/assets/workflow.png)
+![livepreview](apps/web/public/demo/workflow.png)
 
 ## Why This Exists
 
