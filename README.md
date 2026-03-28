@@ -1,4 +1,4 @@
-# RIVET
+# Rivet - AI Automation platform 
 
 [![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://github.com/shashank-poola/rivet)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-blue.svg)](https://www.typescriptlang.org/)
