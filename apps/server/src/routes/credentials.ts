@@ -1,5 +1,5 @@
 import  { Request, Response } from "express";
-import { CredentialsSchema, CredentialsUpdateSchema } from "../types/schema.js";
+import { CredentialsSchema, CredentialsUpdateSchema } from "../../types/schema.js";
 import prisma from "@rivet-n8n/prisma-db";
 
 export interface AuthRequest extends Request {
