@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import prisma from "@rivet-n8n/prisma-db";
-import { addToQueue } from "../redis/redis.js";
+import { addToQueue } from "../../redis/redis.js";
 
 export const executeWorkflow = async (req: Request, res: Response) => {
   try {
-    const { workflowId } = req.params;
+    const workflowId = req.params["workflowId"]!;
     const context = req.body || {};
     const workflow = await prisma.workflow.findUnique({
       where: { id: workflowId },
@@ -13,24 +13,23 @@ export const executeWorkflow = async (req: Request, res: Response) => {
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });
     }
-    const nodes = workflow.nodes as Record<string, any>;
-    const connections = workflow.connections as Record<string, any>;
+    const nodes = (workflow.nodesJson ?? {}) as Record<string, any>;
+    const connections = (workflow.connections ?? {}) as Record<string, any>;
     const totalTasks = Object.keys(nodes).length;
     const execution = await prisma.execution.create({
       data: {
         workflowId,
         totalTasks,
         tasksDone: 0,
-        status: false,
         result: { triggerPayload: context, nodeResults: {} },
       },
     });
     const startingNodes = findStartingNodes(nodes, connections);
     for (const nodeId of startingNodes) {
-      const nodeData = nodes[nodeId];
+      const nodeData = nodes[nodeId] as any;
       await addToQueue({
         id: `${nodeId}-${execution.id}`,
-        type: nodeData.type.toLowerCase(),
+        type: nodeData.type.toLowerCase() as "telegram" | "email" | "gemini" | "form" | "webhook" | "manual",
         data: {
           executionId: execution.id,
           workflowId,

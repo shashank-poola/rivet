@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import prisma from "../db.js";
-import { addToQueue } from "../redis/redis.js";
+import prisma from "../../db.js";
+import { addToQueue } from "../../redis/redis.js";
 
 export async function handleWebhookCall(req: Request, res: Response) {
   try {
