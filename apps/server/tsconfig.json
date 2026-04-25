@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/typescript-config/base.json",
+  "extends": "../../packages/config-typescript/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "esModuleInterop": true,

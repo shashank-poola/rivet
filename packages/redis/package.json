@@ -1,5 +1,5 @@
 {
-  "name": "redis",
+  "name": "@rivet-n8n/redis",
   "private": true,
   "devDependencies": {
     "@types/bun": "latest"
