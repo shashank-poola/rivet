@@ -6,7 +6,7 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src/**/*", "src/middleware", "src/routes/routes.ts", "index.ts"],
+  "include": ["src/**/*", "src/middleware", "src/routes/routes.ts", "src/index.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

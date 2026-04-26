@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { SignupSchema, SigninSchema } from "../../types/schema.js";
+import { SignupSchema, SigninSchema } from "../types/schema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "@rivet-n8n/prisma-db";

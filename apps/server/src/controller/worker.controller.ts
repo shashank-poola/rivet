@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "@rivet-n8n/prisma-db";
-import { addToQueue } from "../../redis/redis.js";
+import { addToQueue } from "../redis/redis.js";
 
 export const executeWorkflow = async (req: Request, res: Response) => {
   try {
