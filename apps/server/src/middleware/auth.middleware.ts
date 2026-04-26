@@ -1,32 +1,52 @@
-import type { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import prisma from "@rivet-n8n/prisma-db";
-import { JWT_SECRET } from "../controller/user.controller.js";
+import type { NextFunction, Request, Response } from "express";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 
-export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const authHeader = req.headers.authorization as string | undefined;
-		const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : undefined;
-		const token = bearerToken ?? (req as any).cookies?.access_token;
+type User = {
+    id : string,
+    email : string
+}
 
-		if (!token) {
-			return res.status(401).json({ message: "Unauthorized" });
-		}
+export interface AuthenticatedRequest extends Request {
+    user: User;
+}
 
-		const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+export const authMiddleware = (req: AuthenticatedRequest, res : Response, next : NextFunction) => {
+    try {
+        const token = req.cookies.auth_token;
 
-		const user = await prisma.user.findUnique({
-			where: { id: decoded.id },
-			select: { id: true, email: true },
-		});
+        if(!token){
+            res.status(403).json({
+                success : false,
+                message : "Cookie not Found",
+            })
+            return;
+        }
 
-		if (!user) {
-			return res.status(401).json({ message: "User not found" });
-		}
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
-		(req as any).user = user;
-		return next();
-	} catch (error) {
-		return res.status(401).json({ message: "Invalid or expired token" });
-	}
+        if(!decoded){
+            res.json({
+                success : false,
+                message : "Failed to decode token"
+            })
+            return;
+        }
+
+        const user = {
+            id : decoded.id,
+            email : decoded.email
+        }
+
+        req.user = user;
+
+        next();
+
+    } catch (error : any) {
+        res.status(500).json({
+            success : false,
+            message : "Failed authentication middleware",
+            error : error?.message
+        })
+        return;
+    }
 };

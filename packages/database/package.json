@@ -1,26 +1,32 @@
 {
   "name": "@rivet-n8n/prisma-db",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     }
   },
   "type": "module",
   "private": true,
+  "scripts": {
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
+  },
   "devDependencies": {
-    "@types/bun": "latest",
-    "prisma": "^7.8.0"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^6.19.0",
-    "pg": "^8.20.0"
+    "@prisma/client": "^7.8.0",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.8.0"
   }
 }
