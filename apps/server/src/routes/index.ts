@@ -14,6 +14,7 @@ mainRouter.use("/analytic", analyticRouter);
 mainRouter.use("/cred", credentialsRouter);
 mainRouter.use("/execution", executionRouter);
 mainRouter.use("/trigger", triggerRouter);
-mainRouter.use()
+mainRouter.use("/webhook", webhookRouter);
+mainRouter.use("/workflow", workflowRouter);
 
 export default mainRouter;
