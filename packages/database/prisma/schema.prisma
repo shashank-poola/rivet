@@ -7,102 +7,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Platform {
-  TELEGRAM
-  RESEND_EMAIL
-  GEMINI
-  GROQ
-}
-
-enum TriggerType {
-  MANUAL
-  WEBHOOK
-}
-
-enum ExecutionStatus {
-  PENDING
-  RUNNING
-  PAUSED
-  COMPLETED
-  FAILED
-}
-
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
-  password     String
-  lastLoggedIn DateTime?
-  credentials  Credentials[]
-  workflows    Workflow[]
-}
+  id       String @unique @default(cuid())
+  email    String @unique
+  password String
 
-model Credentials {
-  id       String   @id @default(uuid())
-  title    String
-  platform Platform
-  data     Json
-  userId   String
-  user     User     @relation(fields: [userId], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  workflows   Workflow[]
+  credentials Credential[]
 }
 
 model Workflow {
-  id          String      @id @default(uuid())
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
-  title       String
-  enabled     Boolean     @default(false)
-  nodesJson   Json?
-  connections Json?
-  nodes       Node[]
-  webhookId   String?     @unique
-  webhook     Webhook?    @relation(fields: [webhookId], references: [id])
-  triggerType TriggerType
-  executions  Execution[]
-  forms       Form[]
+  id      String  @unique @default(cuid())
+  user_id String
+  name    String  @default("Untitled Workflow")
+  enabled Boolean @default(false)
+  nodes   Json
+  edges   Json
+  flow    Json
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  executions Execution[]
 }
 
-model Node {
-  id         String   @id @default(uuid())
-  title      String
-  workflowId String
-  workflow   Workflow @relation(fields: [workflowId], references: [id])
-  enabled    Boolean  @default(false)
+model Credential {
+  id          String       @unique @default(cuid())
+  user_id     String
+  name        String       @default("Untitled Credential")
+  application Applications
+  data        Json
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-model Webhook {
-  id       String    @id @default(uuid())
-  title    String
-  secret   String?
-  Workflow Workflow?
+enum Applications {
+  whatsapp
+  openai
+  telegram
+  resend
+  solana
+}
+
+model AvailableTriggers {
+  id          String   @unique @default(cuid())
+  name        String
+  type        String
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
 }
 
 model Execution {
-  id           String          @id @default(uuid())
-  workflowId   String
-  workflow     Workflow        @relation(fields: [workflowId], references: [id])
-  status       ExecutionStatus @default(PENDING)
-  tasksDone    Int             @default(0)
-  totalTasks   Int?
-  result       Json?
-  pausedNodeId String?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  metadata     Json?
+  id         String   @id @default(cuid())
+  workflow_id String
+  started_at DateTime @default(now())
+  ended_at   DateTime?
+  status     ExecutionStatus @default(RUNNING)
+
+  workflow       Workflow       @relation(fields: [workflow_id], references: [id], onDelete: Cascade)
+  nodeExecutions NodeExecution[]
 }
 
-model Form {
-  id          String           @id @default(uuid())
-  workflowId  String
-  workflow    Workflow         @relation(fields: [workflowId], references: [id])
-  nodeId      String
-  fields      Json
-  submissions FormSubmission[]
+model NodeExecution {
+  id           String   @id @default(cuid())
+  execution_id String
+  node_id      String   // Assuming this is a unique identifier for the node from the workflow's 'nodes' Json
+  started_at   DateTime @default(now())
+  ended_at     DateTime?
+  status       ExecutionStatus
+  output       Json?    // Optional field to store node output data
+  error        Json?    // Optional field to store error details if failed
+
+  execution Execution @relation(fields: [execution_id], references: [id], onDelete: Cascade)
+
+  @@index([execution_id, node_id])
 }
 
-model FormSubmission {
-  id        String   @id @default(uuid())
-  formId    String
-  form      Form     @relation(fields: [formId], references: [id])
-  data      Json
-  createdAt DateTime @default(now())
+enum ExecutionStatus {
+  RUNNING
+  SUCCESS
+  FAILED
 }
