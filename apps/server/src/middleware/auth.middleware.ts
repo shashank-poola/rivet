@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends Request {
     user: User;
 }
 
-export const authMiddleware = (req: AuthenticatedRequest, res : Response, next : NextFunction) => {
+export const authMiddleware = (req: Request, res : Response, next : NextFunction) => {
     try {
         const token = req.cookies.auth_token;
 
@@ -35,9 +35,9 @@ export const authMiddleware = (req: AuthenticatedRequest, res : Response, next :
         const user = {
             id : decoded.id,
             email : decoded.email
-        }
+        };
 
-        req.user = user;
+        (req as AuthenticatedRequest).user = user;
 
         next();
 

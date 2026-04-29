@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
 export interface ApiResponse<T = any> {
   message: string;
@@ -8,50 +8,17 @@ export interface ApiResponse<T = any> {
 
 class ApiClient {
   private baseUrl: string;
-  private token: string | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
-    if (typeof window !== "undefined") {
-      this.token = localStorage.getItem("token");
-    }
   }
 
-  setToken(token: string) {
-    this.token = token;
-    if (typeof window !== "undefined") {
-      localStorage.setItem("token", token);
-    }
-  }
-
-  clearToken() {
-    this.token = null;
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-    }
-  }
-
-  private getHeaders(): HeadersInit {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
-    }
-
-    return headers;
-  }
-
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const response = await fetch(url, {
       ...options,
       headers: {
-        ...this.getHeaders(),
+        "Content-Type": "application/json",
         ...options.headers,
       },
       credentials: "include",
@@ -88,65 +55,31 @@ class ApiClient {
     return this.request<T>(endpoint, { method: "DELETE" });
   }
 
-  // Auth endpoints
-  async signIn(email: string, password: string) {
-    return this.post("/auth/signin", { email, password });
-  }
+  // Auth
+  async me() { return this.get("/auth/me"); }
+  async signIn(email: string, password: string) { return this.post("/auth/signin", { email, password }); }
+  async signUp(email: string, password: string) { return this.post("/auth/signup", { email, password }); }
+  async logout() { return this.post("/auth/logout"); }
 
-  async signUp(email: string, password: string) {
-    return this.post("/auth/signup", { email, password });
-  }
+  // Workflows
+  async getWorkflows() { return this.get("/workflow/"); }
+  async createWorkflow(data: any) { return this.post("/workflow/create", data); }
+  async getWorkflowById(id: string) { return this.get(`/workflow/${id}`); }
+  async updateWorkflow(id: string, data: any) { return this.put(`/workflow/${id}`, data); }
+  async deleteWorkflow(id: string) { return this.delete(`/workflow/${id}`); }
 
-  async logout() {
-    return this.post("/logout", {});
-  }
+  // Credentials
+  async getCredentials() { return this.get("/cred/"); }
+  async createCredential(data: any) { return this.post("/cred/create", data); }
+  async updateCredential(id: string, data: any) { return this.put(`/cred/${id}`, data); }
+  async deleteCredential(id: string) { return this.delete(`/cred/${id}`); }
 
-  async getPersonal() {
-    return this.get("/personal");
-  }
+  // Executions
+  async getExecutions() { return this.get("/execution/"); }
+  async executeWorkflow(workflowId: string) { return this.post("/execution/", { workflowId }); }
 
-  // Workflows endpoints
-  async getWorkflows() {
-    return this.get("/workflows");
-  }
-
-  async createWorkflow(data: any) {
-    return this.post("/workflows", data);
-  }
-
-  async updateWorkflow(workflowId: string, data: any) {
-    return this.put(`/workflow-editor/${workflowId}`, data);
-  }
-
-  async getWorkflowById(workflowId: string) {
-    return this.get(`/workflows/${workflowId}`);
-  }
-
-  async deleteWorkflow(workflowId: string) {
-    return this.delete(`/workflows/${workflowId}`);
-  }
-
-  // Templates endpoint
-  async getTemplates() {
-    return this.get("/templates");
-  }
-
-  // Credentials endpoints
-  async getCredentials() {
-    return this.get("/credentials");
-  }
-
-  async createCredential(data: any) {
-    return this.post("/credentials", data);
-  }
-
-  async updateCredential(credentialsId: string, data: any) {
-    return this.put(`/credentials/${credentialsId}`, data);
-  }
-
-  async deleteCredential(credentialsId: string) {
-    return this.delete(`/credentials/${credentialsId}`);
-  }
+  // Analytics
+  async getAnalytics() { return this.get("/analytic/"); }
 }
 
 export const api = new ApiClient(API_URL);

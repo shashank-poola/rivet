@@ -1,104 +1,91 @@
-import { Request, Response } from "express";
-import prisma from "../../db.js";
-import { addToQueue } from "../redis/redis.js";
+import type { Request, Response } from "express";
+import prisma from "@rivet-n8n/prisma-db";
+import executeNodes from "../engine/execute.engine.js";
+import type { Flow } from "../types/execution.type.js";
+import { ExecutionStatus } from "@prisma/client";
+import { executionEvents } from "../events.js";
 
-export async function handleWebhookCall(req: Request, res: Response) {
-  try {
-    const webhookId = req.params.webhookId;
-    const headers = req.headers;
-    const query = req.query;
-    const rawBody = req.body;
-
-    // 1. Find workflow by webhookId
-    const workflow = await prisma.workflow.findUnique({
-      where: { webhookId },
-    });
-
-    if (!workflow) {
-      return res.status(404).json({
-        error: "No workflow found for this webhook ID",
-      });
-    }
-
-    const nodes = (workflow.nodesJson as Record<string, any>) ?? {};
-    const connections = (workflow.connections as Record<string, string[]>) ?? {};
-
-    
-    let triggerNodeId: string | null = null;
-
-    for (const nodeId in nodes) {
-      const node = nodes[nodeId] as any;
-      if (node.type === "webhook") {
-        triggerNodeId = nodeId;
-        break;
-      }
-    }
-
-    if (!triggerNodeId) {
-      return res.status(500).json({
-        error: "Workflow does not contain a webhook node",
-      });
-    }
-
-    // 3. Check if any form node exists
-    const hasForm = Object.values(nodes).some(
-      (node: any) =>
-        node.type === "form" ||
-        node.data?.nodeType === "form"
-    );
-
-    // 4. Create execution row
-    const newExecution = await prisma.execution.create({
-      data: {
-        workflowId: workflow.id,
-        status: "PENDING",
-        totalTasks: Object.keys(nodes).length,
-      },
-    });
-
-    // 5. Safely decode body
-    let parsedBody = rawBody;
+export const webhookTrigger = async (req: Request, res: Response) => {
     try {
-      if (typeof rawBody === "string") {
-        parsedBody = JSON.parse(rawBody);
-      }
-    } catch {
-      // keep rawBody
+        const { workflowId } = req.params;
+
+        const workflow = await prisma.workflow.findUnique({
+            where: { id: workflowId },
+            select: {
+                flow: true,
+                enabled: true,
+                name: true,
+            },
+        });
+
+        if (!workflow) {
+            res.status(404).json({
+                success: false,
+                message: "Workflow not found"
+            });
+            return;
+        }
+
+        if (!workflow.enabled) {
+            res.status(400).json({
+                success: false,
+                message: "Workflow is not enabled"
+            });
+            return;
+        }
+
+        const flow = workflow.flow as Flow;
+        const { nodes } = flow;
+
+        console.log(`Webhook triggered for workflow ${workflowId}:`);
+
+        const execution = await prisma.execution.create({
+            data: {
+                workflow_id: workflowId as string
+            }
+        });
+
+        if (!execution) {
+            res.status(403).json({ success: false, message: "Failed to create execution" });
+            return;
+        }
+
+        try {
+            const triggerNode = nodes.find((n: any) => n.type === 'trigger');
+            if (triggerNode) {
+                executionEvents.emit("update", { executionId: execution.id, nodeId: triggerNode.id, status: "RUNNING", ts: Date.now() });
+            }
+            const hasActionNodes = (nodes || []).some((n: any) => n.type !== 'trigger');
+            await executeNodes(workflowId as string, nodes, execution.id, triggerNode?.id);
+            if (!hasActionNodes && triggerNode) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                executionEvents.emit("update", { executionId: execution.id, nodeId: triggerNode.id, status: "SUCCESS", ts: Date.now() });
+            }
+            await prisma.execution.update({
+                where: { id: execution.id },
+                data: { status: ExecutionStatus.SUCCESS, ended_at: new Date() }
+            });
+
+            res.status(200).json({ success: true, message: "Workflow executed successfully" });
+            return;
+        } catch (err: any) {
+            const triggerNode = nodes.find((n: any) => n.type === 'trigger');
+            if (triggerNode) {
+                executionEvents.emit("update", { executionId: execution.id, nodeId: triggerNode.id, status: "FAILED", ts: Date.now() });
+            }
+            await prisma.execution.update({
+                where: { id: execution.id },
+                data: { status: ExecutionStatus.FAILED, ended_at: new Date() }
+            });
+            res.status(400).json({ success: false, message: err?.message || "Workflow execution failed" });
+            return;
+        }
+    } catch (error) {
+        console.log("Error while processing webhook:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error while processing webhook"
+        });
+        return;
     }
-
-    // Context passed to worker
-    const webhookContext = {
-      headers,
-      body: parsedBody,
-      query_params: query,
-    };
-
-    // 6. Create first job
-    const firstJob = {
-      id: `${triggerNodeId}-${newExecution.id}`,
-      type: "webhook" as const,
-      data: {
-        executionId: newExecution.id,
-        workflowId: workflow.id,
-        nodeId: triggerNodeId,
-        nodeData: (nodes[triggerNodeId] as any),
-        context: webhookContext,
-        connections: (connections[triggerNodeId] ?? []) as string[],
-      },
-    };
-
-    // Push job to Redis queue
-    await addToQueue(firstJob);
-
-    // 7. Return execution info
-    return res.json({
-      execution_id: newExecution.id,
-      workflow_id: workflow.id,
-      has_form: hasForm,
-    });
-
-  } catch (error) {
-    console.error("Webhook error:", error);
-    return res.status(500).json({ error: "Webhook handler failed" });
-  }
-}
+};
