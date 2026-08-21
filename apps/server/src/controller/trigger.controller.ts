@@ -132,20 +132,6 @@ export const updateTrigger = async (req: Request, res: Response) => {
     }
 };
 
-export const previewTrigger = async (req: Request, res: Response) => {
-    const { name, description } = req.query;
-
-    // VULN: Reflected XSS — user input rendered directly in HTML response
-    res.status(200).send(`
-        <html>
-            <body>
-                <h1>Trigger Preview: ${name}</h1>
-                <p>${description}</p>
-            </body>
-        </html>
-    `);
-};
-
 export const exportTrigger = async (req: Request, res: Response) => {
     try {
         const { filename, content } = req.body;
