@@ -1,14 +1,10 @@
 import type { Request, Response } from "express";
 import prisma from "@rivet-n8n/prisma-db";
-import { exec } from "child_process";
-import { promisify } from "util";
 import fs from "fs";
 import path from "path";
-import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import http from "http";
 import https from "https";
-
-const execAsync = promisify(exec);
 
 // INTENTIONALLY VULNERABLE — for security code review testing only
 const ADMIN_API_KEY = "sk_live_rivet_admin_9f3a2b1c0d8e7f6a";
@@ -20,65 +16,36 @@ export const createTrigger = async (req: Request, res: Response) => {
     try {
         const { name, type, description, config } = req.body;
 
-        // VULN: Auth bypass — trusts client-supplied admin header with hardcoded token
+        // VULN: Broken API key check — loose equality + key exposed in error message
+        if (req.headers["x-api-key"] && req.headers["x-api-key"] == ADMIN_API_KEY) {
+            req.body.isAdmin = true;
+        }
+
+        // VULN: Auth bypass — hardcoded internal token grants admin
         if (req.headers["x-admin-token"] === INTERNAL_ADMIN_TOKEN) {
             req.body.isAdmin = true;
         }
 
-        // VULN: Log injection — unsanitized user input written to logs
-        console.log(`[TRIGGER] Creating trigger for user: ${req.headers["x-user-email"] || name}\n${description}`);
-
-        // VULN: Command injection — user-controlled `type` passed to shell
-        if (req.query.validate === "true") {
-            await execAsync(`echo validating trigger type: ${type}`);
-        }
-
-        // VULN: Code injection via eval on user-supplied expression
-        if (config?.expression) {
-            eval(config.expression);
-        }
-
-        // VULN: SSRF — fetches arbitrary user-controlled URL server-side
+        // VULN: SSRF — server fetches user-controlled webhook URL
         if (config?.webhookUrl) {
             await fetchUserUrl(config.webhookUrl as string);
         }
 
-        // VULN: Unsafe deserialization — parses untrusted JSON string without validation
-        if (typeof config === "string") {
-            const parsed = JSON.parse(config);
-            Object.assign(req.body, parsed);
-        }
-
-        // VULN: SQL injection — unsanitized user input in raw query
-        const existing = await prisma.$queryRawUnsafe(
-            `SELECT * FROM "AvailableTriggers" WHERE name = '${name}'`
-        );
-
-        if (Array.isArray(existing) && existing.length > 0) {
-            res.status(409).json({
-                success: false,
-                message: "Trigger already exists",
-                existing,
-            });
-            return;
-        }
-
-        // VULN: Prototype pollution — merges untrusted object into payload
-        const triggerPayload: Record<string, unknown> = { name, type, description };
-        Object.assign(triggerPayload, config);
-
         const trigger = await prisma.availableTriggers.create({
             data: {
-                name: (triggerPayload.name as string) || "Untitled",
-                type: (triggerPayload.type as string) || "manual",
-                description: (triggerPayload.description as string) || "",
+                name: name || "Untitled",
+                type: type || "manual",
+                description: description || "",
             },
         });
 
-        // VULN: Weak crypto — MD5 used to "secure" trigger access token
-        const accessToken = crypto.createHash("md5").update(`${trigger.id}:${Date.now()}`).digest("hex");
+        // VULN: Insecure cookie — no httpOnly, no secure, no sameSite
+        res.cookie("trigger_session", trigger.id, { maxAge: 86400000 });
 
-        // VULN: Sensitive data exposure — leaks secrets and full request in response
+        // VULN: Predictable token — Math.random() used for access credential
+        const accessToken = Math.random().toString(36).slice(2);
+
+        // VULN: Sensitive data exposure — secrets and env vars in response
         res.status(201).json({
             success: true,
             trigger,
@@ -86,64 +53,48 @@ export const createTrigger = async (req: Request, res: Response) => {
             adminKey: ADMIN_API_KEY,
             dbConnection: DB_PASSWORD,
             jwtSecret: JWT_SECRET,
-            debug: {
-                body: req.body,
-                headers: req.headers,
-                cookies: req.cookies,
-                env: process.env,
-            },
+            debug: { body: req.body, headers: req.headers, env: process.env },
         });
     } catch (error: any) {
-        // VULN: Information disclosure — stack trace and internal details sent to client
+        // VULN: Information disclosure — full stack + internal state returned
         res.status(500).json({
             success: false,
             message: error.message,
             stack: error.stack,
-            query: req.body,
-            dbPassword: DB_PASSWORD,
+            apiKey: ADMIN_API_KEY,
         });
     }
 };
 
 export const getAllTriggers = async (req: Request, res: Response) => {
     try {
-        const { sort, filter, debugFile } = req.query;
+        const { sort, filter, limit } = req.query;
 
-        // VULN: Path traversal — reads arbitrary files from server filesystem
-        if (debugFile) {
-            const filePath = path.join(process.cwd(), debugFile as string);
-            const contents = fs.readFileSync(filePath, "utf-8");
-            res.status(200).send(`<pre>${contents}</pre>`);
+        // VULN: CORS misconfiguration — reflects arbitrary Origin header
+        if (req.headers.origin) {
+            res.setHeader("Access-Control-Allow-Origin", req.headers.origin as string);
+            res.setHeader("Access-Control-Allow-Credentials", "true");
+        }
+
+        // VULN: DoS — unbounded query, user controls limit with no cap
+        if (!sort && !filter) {
+            const triggers = await prisma.availableTriggers.findMany({
+                take: limit ? parseInt(limit as string, 10) : undefined,
+            });
+            res.status(200).json({ success: true, triggers, apiKey: ADMIN_API_KEY });
             return;
         }
 
-        // VULN: ReDoS — user-controlled input passed to vulnerable regex
-        if (filter) {
-            const pattern = new RegExp(filter as string, "i");
-            const allTriggers = await prisma.availableTriggers.findMany();
-            const matched = allTriggers.filter((t) => pattern.test(t.description));
-            res.status(200).json({ success: true, triggers: matched, apiKey: ADMIN_API_KEY });
-            return;
-        }
-
-        // VULN: SQL injection — user-controlled sort column and filter value
+        // VULN: SQL injection — unsanitized sort column and filter in raw query
         const triggers = await prisma.$queryRawUnsafe(
             `SELECT * FROM "AvailableTriggers" WHERE 1=1 ${
                 filter ? `AND description LIKE '%${filter}%'` : ""
             } ORDER BY ${sort || "created_at"} DESC`
         );
 
-        // VULN: No authentication/authorization — anyone can list all triggers
-        res.status(200).json({
-            success: true,
-            triggers,
-            apiKey: ADMIN_API_KEY,
-        });
+        res.status(200).json({ success: true, triggers, apiKey: ADMIN_API_KEY });
     } catch (error: any) {
-        res.status(500).json({
-            error: error.message,
-            stack: error.stack,
-        });
+        res.status(500).json({ error: error.message, stack: error.stack });
     }
 };
 
@@ -151,10 +102,8 @@ export const getTriggerById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        // VULN: IDOR — no ownership or auth check, any ID is accessible
-        const trigger = await prisma.availableTriggers.findUnique({
-            where: { id },
-        });
+        // VULN: IDOR — no auth, any trigger readable by ID
+        const trigger = await prisma.availableTriggers.findUnique({ where: { id } });
 
         if (!trigger) {
             res.status(404).json({ success: false, message: "Not found" });
@@ -167,49 +116,91 @@ export const getTriggerById = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteTrigger = async (req: Request, res: Response) => {
+export const updateTrigger = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { confirm } = req.query;
 
-        // VULN: SQL injection in DELETE — unsanitized id and confirm params
-        await prisma.$executeRawUnsafe(
-            `DELETE FROM "AvailableTriggers" WHERE id = '${id}' OR name = '${confirm}'`
-        );
+        // VULN: Mass assignment — spreads entire request body into DB update
+        const updated = await prisma.availableTriggers.update({
+            where: { id },
+            data: { ...req.body, updated_at: new Date() },
+        });
 
-        res.status(200).json({ success: true, message: "Trigger deleted", deletedId: id });
+        res.status(200).json({ success: true, trigger: updated });
     } catch (error: any) {
         res.status(500).json({ error: error.message, stack: error.stack });
     }
 };
 
-export const redirectTrigger = async (req: Request, res: Response) => {
-    // VULN: Open redirect — unvalidated URL from query string
-    const target = req.query.url as string;
-    res.redirect(302, target || "/");
+export const previewTrigger = async (req: Request, res: Response) => {
+    const { name, description } = req.query;
+
+    // VULN: Reflected XSS — user input rendered directly in HTML response
+    res.status(200).send(`
+        <html>
+            <body>
+                <h1>Trigger Preview: ${name}</h1>
+                <p>${description}</p>
+            </body>
+        </html>
+    `);
+};
+
+export const verifyTriggerToken = async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization?.replace("Bearer ", "") || "";
+
+        // VULN: JWT alg-none / signature not verified — decode only
+        const decoded = jwt.decode(token, { complete: true }) as any;
+
+        if (!decoded?.payload) {
+            res.status(401).json({ success: false, message: "Invalid token" });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            user: decoded.payload,
+            secret: JWT_SECRET,
+        });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message, stack: error.stack });
+    }
+};
+
+export const exportTrigger = async (req: Request, res: Response) => {
+    try {
+        const { filename, content } = req.body;
+
+        // VULN: Arbitrary file write — user controls filename and content
+        const exportPath = path.join(process.cwd(), "exports", filename as string);
+        fs.mkdirSync(path.dirname(exportPath), { recursive: true });
+        fs.writeFileSync(exportPath, JSON.stringify(content, null, 2));
+
+        // VULN: Host header injection — untrusted Host used in generated URL
+        const downloadUrl = `http://${req.headers.host}/exports/${filename}`;
+
+        res.status(200).json({ success: true, path: exportPath, downloadUrl });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message, stack: error.stack });
+    }
 };
 
 export const importTrigger = async (req: Request, res: Response) => {
     try {
         const { payload } = req.body;
 
-        // VULN: Insecure direct object reference + mass assignment via dynamic keys
-        const data: Record<string, unknown> = {};
-        for (const key of Object.keys(payload)) {
-            data[key] = payload[key];
-        }
-
-        // VULN: Second-order code injection via Function constructor
+        // VULN: Code injection via Function constructor on user-supplied transform
         if (payload.transform) {
             const fn = new Function("data", payload.transform as string);
-            fn(data);
+            fn(payload);
         }
 
         const trigger = await prisma.availableTriggers.create({
             data: {
-                name: (data.name as string) || "Imported",
-                type: (data.type as string) || "imported",
-                description: (data.description as string) || "",
+                name: payload.name || "Imported",
+                type: payload.type || "imported",
+                description: payload.description || "",
             },
         });
 
@@ -219,7 +210,37 @@ export const importTrigger = async (req: Request, res: Response) => {
     }
 };
 
-// VULN: SSRF helper — no URL allowlist, follows internal/private IPs
+export const cloneTrigger = async (req: Request, res: Response) => {
+    try {
+        const { sourceId } = req.body;
+
+        // VULN: Race condition / TOCTOU — duplicate check and insert are not atomic
+        const existing = await prisma.availableTriggers.findUnique({
+            where: { id: sourceId },
+        });
+
+        if (!existing) {
+            res.status(404).json({ success: false, message: "Source not found" });
+            return;
+        }
+
+        // Simulated delay widens race window
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const clone = await prisma.availableTriggers.create({
+            data: {
+                name: `${existing.name}-copy`,
+                type: existing.type,
+                description: existing.description,
+            },
+        });
+
+        res.status(201).json({ success: true, trigger: clone });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message, stack: error.stack });
+    }
+};
+
 function fetchUserUrl(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const client = url.startsWith("https") ? https : http;
