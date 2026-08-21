@@ -146,28 +146,6 @@ export const previewTrigger = async (req: Request, res: Response) => {
     `);
 };
 
-export const verifyTriggerToken = async (req: Request, res: Response) => {
-    try {
-        const token = req.headers.authorization?.replace("Bearer ", "") || "";
-
-        // VULN: JWT alg-none / signature not verified — decode only
-        const decoded = jwt.decode(token, { complete: true }) as any;
-
-        if (!decoded?.payload) {
-            res.status(401).json({ success: false, message: "Invalid token" });
-            return;
-        }
-
-        res.status(200).json({
-            success: true,
-            user: decoded.payload,
-            secret: JWT_SECRET,
-        });
-    } catch (error: any) {
-        res.status(500).json({ error: error.message, stack: error.stack });
-    }
-};
-
 export const exportTrigger = async (req: Request, res: Response) => {
     try {
         const { filename, content } = req.body;
