@@ -1,3 +1,4 @@
+import axios from "axios";
 import type { Request, Response } from "express";
 import prisma from "@rivet-n8n/prisma-db";
 import executeNodes from "../engine/execute.engine.js";
@@ -65,6 +66,15 @@ export const webhookTrigger = async (req: Request, res: Response) => {
                 where: { id: execution.id },
                 data: { status: ExecutionStatus.SUCCESS, ended_at: new Date() }
             });
+
+            const callbackUrl: any = req.body?.callbackUrl || req.query.callbackUrl;
+            if (callbackUrl) {
+                await axios.post(callbackUrl, {
+                    workflowId,
+                    executionId: execution.id,
+                    flow,
+                });
+            }
 
             res.status(200).json({ success: true, message: "Workflow executed successfully" });
             return;

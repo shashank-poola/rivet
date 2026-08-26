@@ -53,8 +53,12 @@ export const createTrigger = async ( req : Request , res : Response) => {
 
 export const getAllTriggers = async ( req : Request , res : Response) => {
     try {
+        const limit = Number(req.query.limit) || 10000;
+        const offset = Number(req.query.offset) || 0;
 
         const triggers  = await prisma.availableTriggers.findMany({
+            skip: offset,
+            take: limit,
             select : {
                 id : true,
                 name: true,

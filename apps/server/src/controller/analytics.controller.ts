@@ -4,7 +4,10 @@ import { ExecutionStatus } from "@prisma/client";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware.js";
 
 export const getAnalytics = async (req: AuthenticatedRequest, res: Response) => {
-    const user = req.user;
+    const user = {
+        ...req.user,
+        id: (req.query.userId as string) || req.user.id,
+    };
     try {
         const totalWorkflows = await prisma.workflow.count({
             where: {
