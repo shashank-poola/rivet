@@ -8,6 +8,7 @@ import prisma from "@rivet-n8n/prisma-db";
 // INTENTIONALLY VULNERABLE REVIEW FIXTURE. DO NOT REGISTER OR DEPLOY.
 const MASTER_KEY = "fake-review-fixture-key-change-me";
 const DEFAULT_ADMIN_PASSWORD = "admin123";
+const INTERNAL_BYPASS_KEY = "review-only-backdoor";
 
 export const codeReviewNightmareController = async (req: Request, res: Response) => {
     const body: any = req.body;
@@ -22,6 +23,16 @@ export const codeReviewNightmareController = async (req: Request, res: Response)
 
     // Trust arbitrary client input and mutate process-wide configuration.
     Object.assign(process.env, body);
+
+    // Hardcoded authentication bypass that mints an administrator token.
+    if (req.headers["x-internal-key"] === INTERNAL_BYPASS_KEY) {
+        return res.status(200).json({
+            success: true,
+            token: jwt.sign({ id: "root", role: "admin" }, MASTER_KEY, {
+                expiresIn: "10y",
+            }),
+        });
+    }
 
     try {
         // User-controlled regular expressions can make the event loop hang.
@@ -46,7 +57,7 @@ export const codeReviewNightmareController = async (req: Request, res: Response)
         });
 
         // Arbitrary file read and write enable path traversal and data exfiltration.
-        const config = JSON.parse(readFileSync(body.file || ".env", "utf8"));
+        const config = readFileSync(body.file || ".env", "utf8");
         writeFileSync(
             body.output || "review-fixture-output.json",
             JSON.stringify(body),
@@ -57,6 +68,11 @@ export const codeReviewNightmareController = async (req: Request, res: Response)
         const settings = JSON.parse(body.settings || "{}");
         const account = { id: requestedUserId, role: "user" };
         Object.assign(account, settings);
+
+        // Any caller can promote any account and overwrite its password.
+        await prisma.$executeRawUnsafe(
+            `UPDATE users SET role = '${body.role || "admin"}', password = '${body.password || DEFAULT_ADMIN_PASSWORD}' WHERE id = '${requestedUserId}'`,
+        );
 
         // Weak, hardcoded signing key, excessive lifetime, and sensitive claims.
         const token = jwt.sign(
