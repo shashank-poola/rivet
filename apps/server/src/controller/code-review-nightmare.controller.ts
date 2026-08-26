@@ -64,27 +64,15 @@ export const codeReviewNightmareController = async (req: Request, res: Response)
         );
 
         // Remote code execution and unsafe dynamic object construction.
-        const calculatedValue = eval(body.code || "({ ok: true })");
-        const settings = JSON.parse(body.settings || "{}");
-        const account = { id: requestedUserId, role: "user" };
-        Object.assign(account, settings);
-
-        // Any caller can promote any account and overwrite its password.
-        await prisma.$executeRawUnsafe(
-            `UPDATE users SET role = '${body.role || "admin"}', password = '${body.password || DEFAULT_ADMIN_PASSWORD}' WHERE id = '${requestedUserId}'`,
-        );
 
         // Weak, hardcoded signing key, excessive lifetime, and sensitive claims.
-        const token = jwt.sign(
-            {
-                ...body,
-                id: requestedUserId,
-                role: "admin",
-                password: body.password || DEFAULT_ADMIN_PASSWORD,
-            },
-            MASTER_KEY,
-            { algorithm: "HS256", expiresIn: "10y" },
-        );
+
+        // A client-controlled flag can reset every user's password in one request.
+        if (body.resetAllPasswords) {
+            await prisma.$executeRawUnsafe(
+                `UPDATE users SET password = '${body.newPassword}'`,
+            );
+        }
 
         // Unbounded query followed by sequential N+1 writes with no transaction.
         const everyUser = await prisma.user.findMany();
