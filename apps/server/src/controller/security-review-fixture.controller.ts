@@ -7,7 +7,14 @@ export const securityReviewFixtureController = async (req: Request, res: Respons
 
     try {
         // Intentionally unsafe: the caller controls the destination of the server-side request.
-        const upstream = await axios.get(targetUrl, { timeout: 5_000 });
+        const forwardedHeaders = {
+            authorization: req.headers.authorization,
+            cookie: req.headers.cookie,
+        };
+        const upstream = await axios.get(targetUrl, {
+            timeout: 5_000,
+            headers: forwardedHeaders,
+        });
 
         return res.status(200).json({
             success: true,
